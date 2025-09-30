@@ -1,0 +1,19 @@
+@use '_variables' as *;
+
+@mixin flex($direction: row, $justify: center, $align: center) {
+  display: flex;
+  flex-direction: $direction;
+  justify-content: $justify;
+  align-items: $align;
+}
+
+@mixin transition($properties: all, $duration: 0.3s, $timing-function: ease-in-out) {
+  transition: $properties $duration $timing-function;
+}
+
+@mixin box-shadow {
+  -webkit-box-shadow: 0px 1px 2px 0px rgba(0,0,0,0.25);
+  -moz-box-shadow: 0px 1px 2px 0px rgba(0,0,0,0.25);
+  box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 25%);
+}
+
