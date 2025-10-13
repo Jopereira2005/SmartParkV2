@@ -1,26 +1,25 @@
 @use 'variables' as *;
 
 :root {
-  --primary-color: ${$primary-color};
-  --secondary-color: ${$secondary-color};
-  --tertiary-color: ${$tertiary-color};
-  --dark-color: ${$dark-color};
-  --light-color: ${$light-color};
-  --contrast-color: ${$contrast-color};
-  --gray-scale: ${$gray-scale};
-  --gray-scale-light: ${$gray-scale-light};
-  --gray-scale-dark: ${$gray-scale-dark};
-  --secondary-color: ${$secondary-color};
-  --success-color: ${$success-color};
-  --danger-color: ${$danger-color};
+  --primary-color: #{$primary-color};
+  --secondary-color: #{$secondary-color};
+  --tertiary-color: #{$tertiary-color};
+  --dark-color: #{$dark-color};
+  --light-color: #{$light-color};
+  --contrast-color: #{$contrast-color};
+  --gray-scale: #{$gray-scale};
+  --gray-scale-light: #{$gray-scale-light};
+  --gray-scale-dark: #{$gray-scale-dark};
+  --success-color: #{$success-color};
+  --danger-color: #{$danger-color};
 
-  --font-family: ${$font-family};
-  --font-family-alta: ${$font-family-alt};
+  --font-family: #{$font-family};
+  --font-family-alt: #{$font-family-alt};
 
-  --font-medium: ${$font-medium};
-  --font-bold: ${$font-bold};
+  --font-medium: #{$font-medium};
+  --font-bold: #{$font-bold};
 
-  font-family: $font-family;
+  font-family: var(--font-family);
   line-height: 1.5;
 
   // 1 rem = 10px
@@ -30,8 +29,5 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
 }
-
-
-
-
