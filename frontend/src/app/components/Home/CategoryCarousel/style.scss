@@ -1,0 +1,37 @@
+@use '../../../styles/mixins' as *;
+
+.swiper {
+  width: calc(100% - 20px);
+  border-radius: 15px;
+  margin: 0 10px 10px 10px;
+  padding: 10px !important;
+  background-color: var(--gray-scale-light);
+
+  .swiper-slide {
+    @include flex(column, space-between, center);
+    max-width: auto;
+    height: 125px !important;
+    padding: 10px;
+    background-color: var(--light-color);
+    @include box-shadow;
+    border-radius: 10px;
+    cursor: pointer;
+
+    .category_card_title {
+      color: var(--dark-color);
+      font-size: 1.4rem;
+    }
+
+    .category_card_image {
+      width: fit-content;
+    }
+  }
+
+  .swiper-pagination-bullet {
+    background-color: var(--gray-scale);
+  }
+
+  .swiper-pagination-bullet-active {
+    background-color: var(--secondary-color);
+  }
+}

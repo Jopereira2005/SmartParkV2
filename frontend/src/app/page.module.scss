@@ -6,7 +6,11 @@
 }
 
 .main {
+  width: 100%;
+  @include flex(column, flex-start, center);
+
   &__welcome {
+    width: calc(100% - 30px);
     background-color: var(--light-color);
     padding: 15px;
     margin: 15px 15px 0 15px;
@@ -68,6 +72,22 @@
           color: var(--gray-scale);
         }
       }
+    }
+  }
+
+  &__categories { 
+    margin: 20px 0;
+    width: calc(100% - 70px);
+    @include flex(column, center, center);
+    background-color: var(--light-color);
+    @include box-shadow;
+    border-radius: 25px;
+
+    &__title {
+      font-size: 1.8rem;
+      font-weight: var(--font-bold);
+      color: var(--dark-color);
+      margin: 10px 0;
     }
   }
 }
