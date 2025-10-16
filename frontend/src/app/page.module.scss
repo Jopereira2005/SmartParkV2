@@ -1,4 +1,4 @@
-@use './styles/mixins' as *;
+@use '@/app/styles/mixins' as *;
 
 .home {
   color: var(--gray-scale-light);
@@ -76,7 +76,7 @@
   }
 
   &__categories { 
-    margin: 20px 0;
+    margin-top: 20px;
     width: calc(100% - 70px);
     @include flex(column, center, center);
     background-color: var(--light-color);

@@ -1,4 +1,4 @@
-@use '../../../styles/mixins' as *;
+@use '@/app/styles/mixins' as *;
 
 .swiper {
   width: calc(100% - 20px);
@@ -23,7 +23,9 @@
     }
 
     .category_card_image {
-      width: fit-content;
+      max-width: 80px;
+      max-height: 80px;
+      aspect-ratio: 1 / 1;
     }
   }
 

@@ -13,7 +13,7 @@ import 'swiper/css/pagination'
 
 interface CategoryCarouselProps {
   categories: Category[] | [];
-  navigateFilter?: (id_categor: Category) => void; 
+  navigateFilter?: (id_category: Category) => void; 
 }
 
 const CategoryCarousel = ({ categories, navigateFilter }: CategoryCarouselProps) => {
@@ -21,7 +21,6 @@ const CategoryCarousel = ({ categories, navigateFilter }: CategoryCarouselProps)
     modules: [Navigation, Pagination, Grid],
     spaceBetween: 10,
     slidesPerView: 2,
-    loop: true,
     grid: {
         cols: 2,
         rows: 2,

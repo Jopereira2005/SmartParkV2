@@ -24,7 +24,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="pt-BR" className={`${roboto.variable} ${lato.variable}`}>
       <body>
-        {children}
+        { children }
       </body>
     </html>
   )
