@@ -4,6 +4,7 @@ import styled from "./page.module.scss";
 
 import CategoryCarousel from './components/Home/CategoryCarousel'
 import EstablishmentContainer from './components/Common/EstablishmentContainer'
+import NavBar from './components/Common/NavBar';
 
 import { Category } from './interfaces/Category';
 import { Establishment } from './interfaces/Establishment';
@@ -64,6 +65,7 @@ export default function Home() {
           navigateToEstablishment={() => {}}
         />
       </div>
+      <NavBar />
     </div>
   );
 }
