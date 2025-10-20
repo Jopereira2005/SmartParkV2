@@ -1,5 +1,21 @@
 import type { SVGProps } from 'react';
 
 export function HomeIcon(props: SVGProps<SVGSVGElement>) {
-	return (<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 32 32" {...props}><path fill="currentColor" d="M13.895 2.777a3.25 3.25 0 0 1 4.21 0l9.75 8.287A3.25 3.25 0 0 1 29 13.54V26.5a2.5 2.5 0 0 1-2.5 2.5h-4a2.5 2.5 0 0 1-2.5-2.5V20a2 2 0 0 0-1.991-2H13.99A2 2 0 0 0 12 20v6.5A2.5 2.5 0 0 1 9.5 29h-4A2.5 2.5 0 0 1 3 26.5V13.54a3.25 3.25 0 0 1 1.145-2.476z"></path></svg>);
+	return (<svg
+    width="1em"
+    height="1em"
+    viewBox="0 0 26 26"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <path
+      d="M23.5 10.6162V23.5H18.125V19.1504C18.1249 18.2681 17.8016 17.4143 17.2139 16.7549L17.0928 16.625L16.9648 16.502C16.313 15.9025 15.4578 15.5635 14.5625 15.5635H11.4375C10.4825 15.5635 9.5728 15.9489 8.90723 16.625C8.24278 17.3 7.8751 18.2092 7.875 19.1504V23.5H2.5V10.6162L13 2.61719L23.5 10.6162Z"
+      fill="currentColor"
+      stroke="currentColor"
+      strokeWidth={4}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>);
 }
