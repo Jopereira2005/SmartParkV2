@@ -61,12 +61,10 @@
     }
 
     &__icon {
-      height: 40px;
-      width: 40px;
-      overflow: visible;
-
+      height: 30px;
+      width: 30px;
       color: var(--gray-scale-dark);
-
+      margin: 0 4px;
       &__isMarked {
         color: var(--secondary-color);
       }
