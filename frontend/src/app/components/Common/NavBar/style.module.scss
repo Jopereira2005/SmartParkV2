@@ -1,2 +1,54 @@
 @use '@/app/styles/mixins' as *;
 
+.navbar {
+  position: fixed;
+  left: 50%;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+  transform: translateX(calc(-50% - 15px));
+  
+  @include flex(row, space-between, center);
+
+  background-color: var(--light-color);
+  width: calc(100% - 30px);
+  max-width: 386px;
+  margin: 0px 15px 15px;
+  padding: 10px 10px;
+  border-radius: 10px;
+  @include box-shadow;
+
+  &__item {
+    @include flex(column, center, center);
+    gap: 5px;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    width: 100px;
+    @include transition;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+
+    .icon {
+      font-size: 25px;
+      color: var(--gray-scale-dark);
+      @include transition;
+    }
+  
+    .text {
+      color: var(--gray-scale-dark);
+      font-size: 1.2rem;
+      font-weight: var(--font-medium);
+      line-height: 1.2;
+    }
+  }
+
+  &__item_active {
+    .icon, .text {
+      color: var(--secondary-color);
+    }
+
+    .text {
+      font-weight: var(--font-bold);
+    }
+  } 
+}
