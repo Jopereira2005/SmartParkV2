@@ -1,9 +1,9 @@
 "use client";
 import styled from "./style.module.scss";
 
-import { FilterIcon } from '@/app/assets/Common/Filter';
+import { FilterIcon } from '@/assets/Common/Filter';
 
-import { Establishment } from '@/app/interfaces/Establishment';
+import { Establishment } from '@/interfaces/Establishment';
 
 import EstablishmentCard from '../EstablishmentCard';
 
@@ -12,8 +12,7 @@ interface EstablishmentContainerProps {
   navigateToEstablishment?: (establishment: Establishment) => void; 
 }
 
-const EstablishmentContainer = ({ establishments, navigateToEstablishment }: EstablishmentContainerProps) => {
-
+export default function EstablishmentContainer({ establishments, navigateToEstablishment }: EstablishmentContainerProps) {
   return (
     <div className={ styled.establishment_container }>
       <div className={ styled.establishment_container__header }>
@@ -36,4 +35,3 @@ const EstablishmentContainer = ({ establishments, navigateToEstablishment }: Est
     </div>
   );
 };
-export default EstablishmentContainer;

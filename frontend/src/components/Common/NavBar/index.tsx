@@ -3,16 +3,16 @@ import { useState } from "react"
 
 import styled from "./style.module.scss";
 
-import { HomeIcon } from "@/app/assets/Common/Home";
-import { MarkIcon } from "@/app/assets/Common/Mark";
-import { ProfileIcon } from "@/app/assets/Common/Profile";
-import { SearchIcon } from "@/app/assets/Common/Search";
+import { HomeIcon } from "@/assets/Common/Home";
+import { MarkIcon } from "@/assets/Common/Mark";
+import { ProfileIcon } from "@/assets/Common/Profile";
+import { SearchIcon } from "@/assets/Common/Search";
 
-const NavBar = () => {
+export default function NavBar() {
   // const navigate = useNavigate();
   // const location = useLocation();
 
-  const [page, setPage] = useState(location.pathname);
+  const [page, setPage] = useState('');
 
   const handlePage = (url: string) => {
     // setPage(url);
@@ -40,4 +40,3 @@ const NavBar = () => {
     </nav>
   );
 };
-export default NavBar;

@@ -1,6 +1,6 @@
-@use '@/app/styles/mixins' as *;
+@use '@/styles/mixins' as *;
 
-.swiper {
+.home_category_carousel {
   width: calc(100% - 20px);
   border-radius: 15px;
   margin: 0 10px 10px 10px;
@@ -31,9 +31,11 @@
 
   .swiper-pagination-bullet {
     background-color: var(--gray-scale);
+    margin: 0 2px !important;
   }
 
   .swiper-pagination-bullet-active {
     background-color: var(--secondary-color);
+    margin: 0 2px !important;
   }
 }

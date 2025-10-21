@@ -1,13 +1,14 @@
 "use client";
 import styled from "./style.module.scss";
 
-import { FilterIcon } from '@/app/assets/Common/Filter';
+import { FilterIcon } from '@/assets/Common/Filter';
 
 interface ParkCounterProps {
   maxParkingSpots: number;
   occupiedSpots: number;
 }
-const ParkCounter = ({ maxParkingSpots, occupiedSpots }: ParkCounterProps) => {
+
+export default function ParkCounter({ maxParkingSpots, occupiedSpots }: ParkCounterProps) {
   return (
     <div className={ `${styled.park_counter} ${ (maxParkingSpots == occupiedSpots) ? styled.park_counter__full : '' }` }>
       <p className={ styled.park_counter__text }>Vagas</p>
@@ -15,4 +16,3 @@ const ParkCounter = ({ maxParkingSpots, occupiedSpots }: ParkCounterProps) => {
     </div>
   );
 };
-export default ParkCounter;

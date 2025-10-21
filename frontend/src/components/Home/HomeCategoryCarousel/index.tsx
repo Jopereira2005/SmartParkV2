@@ -3,7 +3,7 @@ import Image from 'next/image'
 
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Navigation, Pagination, Grid } from 'swiper/modules';
-import { Category } from '@/app/interfaces/Category';
+import { Category } from '@/interfaces/Category';
 
 import './style.scss'
 import 'swiper/css'
@@ -30,7 +30,7 @@ const CategoryCarousel = ({ categories, navigateFilter }: CategoryCarouselProps)
   };
 
   return (
-    <Swiper {...settings}>
+    <Swiper {...settings} className="home_category_carousel">
       { categories.map((category) => (
         <SwiperSlide key={category.id_category}>
             <Image

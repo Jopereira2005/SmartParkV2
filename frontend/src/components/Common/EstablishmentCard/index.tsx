@@ -3,9 +3,9 @@ import Image from "next/image";
 
 import styled from "./style.module.scss";
 
-import { MarkIcon } from '@/app/assets/Common/Mark';
+import { MarkIcon } from '@/assets/Common/Mark';
 
-import { Establishment } from '@/app/interfaces/Establishment';
+import { Establishment } from '@/interfaces/Establishment';
 
 import ParkCounter from "../ParkCounter";
 
@@ -15,8 +15,7 @@ interface EstablishmentCardProps {
   isSaved: boolean;
 }
 
-const EstablishmentCard = ({ establishment, navigateToEstablishment, isSaved }: EstablishmentCardProps) => {
-
+export default function EstablishmentCard({ establishment, navigateToEstablishment, isSaved }: EstablishmentCardProps) {
   return (
     <div className={ styled.establishment_card }>
       <div className={ styled.establishment_card__info }>
@@ -40,4 +39,3 @@ const EstablishmentCard = ({ establishment, navigateToEstablishment, isSaved }: 
     </div>
   );
 };
-export default EstablishmentCard;
