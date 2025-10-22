@@ -39,14 +39,14 @@ export default function Home() {
     <div className={ styled.home }>
       <div className={ styled.main }>
         <div className={ styled.main__welcome }>
-          <div className={ styled.main__welcome__image }>
-            <Image 
-              src="/images/Avatar.png" 
-              alt="Avatar" 
-              width={90} 
-              height={90}
-            />
-          </div>
+          <Image
+            className={ styled.main__welcome__image }
+            src="/images/Avatar.png" 
+            alt="Avatar" 
+            width={ 90 } 
+            height={ 90 }
+            priority
+          />
 
           <div className={ styled.main__welcome__texts }>
             <h1 className={ styled.main__welcome__texts__title }>Bem Vindo, Mr Paxe 👋</h1>

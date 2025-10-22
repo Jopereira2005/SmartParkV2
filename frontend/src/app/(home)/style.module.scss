@@ -19,10 +19,8 @@
     @include box-shadow;
 
     &__image {
-      img {
-        border-radius: 100%;
-      }
-      padding-right: 15px;   
+      border-radius: 100%;
+      margin-right: 15px;   
     }
 
     &__texts {
