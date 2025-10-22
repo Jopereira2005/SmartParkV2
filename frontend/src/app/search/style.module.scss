@@ -1,0 +1,23 @@
+@use '@/styles/mixins' as *;
+
+.home {
+  color: var(--gray-scale-light);
+  min-height: 100vh;
+}
+
+.main {
+  width: 100%;
+  @include flex(column, flex-start, center);
+
+  &__categories { 
+    margin-top: 25px;
+    width: calc(100% - 70px);
+
+    &__title {
+      font-size: 2.4rem;
+      font-weight: var(--font-bold);
+      color: var(--dark-color);
+      margin-bottom: 15px;
+    }
+  }
+}

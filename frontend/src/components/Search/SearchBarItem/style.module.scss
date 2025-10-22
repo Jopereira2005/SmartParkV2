@@ -1,0 +1,73 @@
+@use '@/styles/mixins' as *;
+
+.search_bar_item {
+  width: 100%;
+  @include flex(row, space-between, center);
+  background-color: var(--light-color);
+  padding: 10px 0px 10px 10px;
+  border-radius: 10px;
+  @include box-shadow;
+  cursor: pointer;
+
+  &__info {
+    @include flex(row, flex-start, center);
+    gap: 10px;
+    width: fit-content;
+
+    &__image {
+      border-radius: 5px;
+    }
+
+    &__texts {
+      @include flex;
+      gap: 3px;
+      height: 30px;
+
+      &__name {
+        font-size: 1.5rem;
+        color: var(--dark-color);
+        font-weight: var(--font-bold);
+      }
+  
+      &__address {
+        font-size: 1rem;
+        color: var(--gray-scale-dark);
+        font-weight: var(--font-medium);
+        @include text-truncate;
+      }
+    }
+  }
+
+  &__others {
+    margin-left: 5px;
+    width: fit-content;
+    min-width: 90px;
+    @include flex(row, flex-end, center);
+
+    &__div {
+      min-width: 10px;
+      height: 30px;
+      @include flex(row, flex-end, center);
+      
+      &::after {
+        background-color: var(--gray-scale);
+        border-radius: 2px;
+        content: "";
+        display: block;
+        width: 1px;
+        height: 100%;
+      }
+    }
+
+    &__icon {
+      height: 30px;
+      width: 30px;
+      color: var(--gray-scale-dark);
+      margin: 0 4px;
+      
+      &__isMarked {
+        color: var(--secondary-color);
+      }
+    }
+  }
+}

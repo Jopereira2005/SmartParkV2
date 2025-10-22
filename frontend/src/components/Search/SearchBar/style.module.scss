@@ -1,0 +1,88 @@
+@use '@/styles/mixins' as *;
+
+.search_bar {
+  position: relative;
+  width: 100%;
+  @include flex(column, flex-start, center);
+  justify-content: center;
+
+  &__container {
+    @include flex;
+    width: calc(100% - 30px);
+    background-color: var(--light-color);
+    margin-top: 15px;
+    padding: 20px;
+    border-radius: 25px;
+    @include box-shadow;
+
+    &__icon {
+      color: var(--gray-scale-dark);
+      width: 25px;
+      height: 25px;
+      margin-right: 15px;
+      @include transition;
+      
+      path {
+        fill: transparent;
+        stroke-width: 4px;
+      }
+    }
+
+    &__input {
+      width: 100%; 
+      background-color: transparent;
+      outline: none;
+      border: none;
+      color: var(--dark-color);
+      font-size: 1.5rem;
+
+      &::placeholder {
+        color: var(--gray-scale-dark);
+      }
+    }
+
+    &:focus-within {
+      .search_bar__container__icon {
+        @include transition;
+        color: var(--dark-color);
+      }
+    }
+  }
+
+  &__list {
+    position: absolute;
+    top: 80px;
+    z-index: 15;
+    @include flex(column, flex-start, center);
+    max-height: 485px;
+    overflow-y: auto;
+    margin-top: 10px;
+    list-style: none;
+    width: calc(100% - 30px);
+    background-color: var(--gray-scale-light);
+    border: 10px solid var(--light-color);
+    border-radius: 25px;
+    padding: 10px;
+    gap: 5px;
+    @include box-shadow;
+
+    &::-webkit-scrollbar {
+      width: 5px;
+    }
+    
+    &::-webkit-scrollbar-track {
+      background: transparent;     
+    }
+    
+    &::-webkit-scrollbar-thumb {
+      border-radius: 20px;       
+      border: 3px solid var(--gray-scale);  
+    }
+
+    &__message {
+      font-size: 1.5rem;
+      font-weight: var(--font-bold);
+      color: var(--dark-color);
+    }
+  }
+}

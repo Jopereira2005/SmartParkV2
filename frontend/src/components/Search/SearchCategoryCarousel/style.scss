@@ -1,0 +1,20 @@
+@use '@/styles/mixins' as *;
+
+.search_category_carousel {
+  width: 100%;
+  padding-bottom: 30px !important;
+
+  .swiper-slide {
+    max-width: auto;
+  }
+
+  .swiper-pagination-bullet {
+    margin: 0 2px !important;
+    background-color: var(--gray-scale);
+  }
+
+  .swiper-pagination-bullet-active {
+    margin: 0 2px !important;
+    background-color: var(--secondary-color);
+  }
+}
