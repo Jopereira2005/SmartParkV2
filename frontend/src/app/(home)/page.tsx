@@ -27,12 +27,12 @@ export default function Home() {
   ];
 
   const establishments: Establishment[] = [
-    { id_establishment: "1", public_id: "abc123", name: "Facens", description: "Faculdade de Engenharia de Sorocaba", address: "Rodovia Senador José Ermírio de Moraes, 1425", district: "Jardim Constantino Matucci", city: "Sorocaba", state: "SP", cep: "18085-784" },
-    { id_establishment: "2", public_id: "abc123", name: "Facens", description: "Faculdade de Engenharia de Sorocaba", address: "Rodovia Senador José Ermírio de Moraes, 1425", district: "Jardim Constantino Matucci", city: "Sorocaba", state: "SP", cep: "18085-784" },
-    { id_establishment: "3", public_id: "abc123", name: "Facens", description: "Faculdade de Engenharia de Sorocaba", address: "Rodovia Senador José Ermírio de Moraes, 1425", district: "Jardim Constantino Matucci", city: "Sorocaba", state: "SP", cep: "18085-784" },
-    { id_establishment: "4", public_id: "abc123", name: "Facens", description: "Faculdade de Engenharia de Sorocaba", address: "Rodovia Senador José Ermírio de Moraes, 1425", district: "Jardim Constantino Matucci", city: "Sorocaba", state: "SP", cep: "18085-784" },
-    { id_establishment: "5", public_id: "abc123", name: "Facens", description: "Faculdade de Engenharia de Sorocaba", address: "Rodovia Senador José Ermírio de Moraes, 1425", district: "Jardim Constantino Matucci", city: "Sorocaba", state: "SP", cep: "18085-784" },
-    { id_establishment: "6", public_id: "abc123", name: "Facens", description: "Faculdade de Engenharia de Sorocaba", address: "Rodovia Senador José Ermírio de Moraes, 1425", district: "Jardim Constantino Matucci", city: "Sorocaba", state: "SP", cep: "18085-784" }
+    { id_establishment: "1", name: "Facens", description: "Faculdade de Engenharia de Sorocaba", address: { address: "Rodovia Senador José Ermírio de Moraes, 1425", district: "Jardim Constantino Matucci", city: "Sorocaba", state: "SP", cep: "18085-784" } },
+    { id_establishment: "2", name: "Facens", description: "Faculdade de Engenharia de Sorocaba", address: { address: "Rodovia Senador José Ermírio de Moraes, 1425", district: "Jardim Constantino Matucci", city: "Sorocaba", state: "SP", cep: "18085-784" } },
+    { id_establishment: "3", name: "Facens", description: "Faculdade de Engenharia de Sorocaba", address: { address: "Rodovia Senador José Ermírio de Moraes, 1425", district: "Jardim Constantino Matucci", city: "Sorocaba", state: "SP", cep: "18085-784" } },
+    { id_establishment: "4", name: "Facens", description: "Faculdade de Engenharia de Sorocaba", address: { address: "Rodovia Senador José Ermírio de Moraes, 1425", district: "Jardim Constantino Matucci", city: "Sorocaba", state: "SP", cep: "18085-784" } },
+    { id_establishment: "5", name: "Facens", description: "Faculdade de Engenharia de Sorocaba", address: { address: "Rodovia Senador José Ermírio de Moraes, 1425", district: "Jardim Constantino Matucci", city: "Sorocaba", state: "SP", cep: "18085-784" } },
+    { id_establishment: "6", name: "Facens", description: "Faculdade de Engenharia de Sorocaba", address: { address: "Rodovia Senador José Ermírio de Moraes, 1425", district: "Jardim Constantino Matucci", city: "Sorocaba", state: "SP", cep: "18085-784" } }
   ];
 
   return (

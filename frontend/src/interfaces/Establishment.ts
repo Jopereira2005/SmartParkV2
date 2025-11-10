@@ -1,3 +1,5 @@
+import { Address } from "./Address";
+
 export interface Establishment {
   id_establishment?: string;
   name: string;
@@ -6,4 +8,5 @@ export interface Establishment {
   id_address?: string;
   id_category?: string;
   avatar?: string;
+  address?: Address;
 }

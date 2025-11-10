@@ -3,14 +3,15 @@ import Image from "next/image";
 
 import styled from "./style.module.scss";
 
-import { MarkIcon } from '@/assets/Common/Mark';
-
-import { Establishment } from '@/interfaces/Establishment';
-
 import ParkCounter from "../ParkCounter";
 
+import { Establishment } from "@/interfaces/Establishment";
+import { Address } from "@/interfaces/Address";
+
+import { MarkIcon } from "@/assets/Common/Mark";
+
 interface EstablishmentCardProps {
-  establishment: Establishment | null;
+  establishment: Establishment;
   navigateToEstablishment?: (establishment: Establishment) => void; 
   isSaved: boolean;
 }
@@ -27,8 +28,8 @@ export default function EstablishmentCard({ establishment, navigateToEstablishme
           height={ 45 }
         />
         <div className={ styled.establishment_card__info__texts }>
-          <h2 className={ styled.establishment_card__info__texts__name }>{ establishment?.name }</h2>
-          <p className={ styled.establishment_card__info__texts__address }>{ establishment?.address } - { establishment?.district }, { establishment?.city } - { establishment?.state }, { establishment?.cep }</p>
+          <h2 className={ styled.establishment_card__info__texts__name }>{ establishment.name }</h2>
+          <p className={ styled.establishment_card__info__texts__address }>{ establishment.address?.address } - { establishment.address?.district }, { establishment.address?.city } - { establishment.address?.state }, { establishment.address?.cep }</p>
         </div>
       </div>
       <div className={ styled.establishment_card__others }>
