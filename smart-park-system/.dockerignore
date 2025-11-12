@@ -1,0 +1,267 @@
+# ===============================
+# Docker Ignore File
+# SmartPark Project
+# ===============================
+
+# Este arquivo especifica quais arquivos e diretórios devem ser
+# ignorados durante o build do Docker para otimizar o tamanho
+# da imagem e evitar incluir arquivos desnecessários.
+
+# ===============================
+# Git e Controle de Versão
+# ===============================
+.git
+.gitignore
+.gitattributes
+.github/
+
+# ===============================
+# Documentação
+# ===============================
+*.md
+!README.md
+docs/
+*.txt
+!requirements*.txt
+
+# ===============================
+# Arquivos de Configuração Local
+# ===============================
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+.env.*
+!.env.example
+
+# ===============================
+# Docker
+# ===============================
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# ===============================
+# IDE e Editores
+# ===============================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# ===============================
+# Python
+# ===============================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# ===============================
+# Virtual Environments
+# ===============================
+venv/
+env/
+ENV/
+.venv/
+.env/
+.pyenv/
+
+# ===============================
+# Django
+# ===============================
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+/media/
+/static/
+/staticfiles/
+
+# ===============================
+# Testing
+# ===============================
+.coverage
+.pytest_cache/
+.tox/
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+htmlcov/
+
+# ===============================
+# Jupyter Notebooks
+# ===============================
+.ipynb_checkpoints
+
+# ===============================
+# Node.js (se houver frontend)
+# ===============================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ===============================
+# Logs
+# ===============================
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ===============================
+# Runtime
+# ===============================
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# ===============================
+# Temporary Files
+# ===============================
+*.tmp
+*.temp
+.sass-cache/
+.connect.lock
+.typings/
+
+# ===============================
+# OS Generated Files
+# ===============================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# ===============================
+# Backup Files
+# ===============================
+*.bak
+*.backup
+*.sql
+*.dump
+
+# ===============================
+# Security Files
+# ===============================
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+
+# ===============================
+# CI/CD
+# ===============================
+.travis.yml
+.github/
+*.yml
+!docker-compose.yml
+!docker-compose.*.yml
+
+# ===============================
+# Scripts Development
+# ===============================
+scripts/dev/
+scripts/local/
+*.sh
+!docker/entrypoint.sh
+
+# ===============================
+# Monitoring and Analytics
+# ===============================
+.nyc_output/
+coverage/
+
+# ===============================
+# Package Managers
+# ===============================
+package-lock.json
+yarn.lock
+Pipfile.lock
+
+# ===============================
+# Development Tools
+# ===============================
+.editorconfig
+.eslintrc*
+.prettierrc*
+.stylelintrc*
+
+# ===============================
+# Cloud and Deployment
+# ===============================
+.serverless/
+.terraform/
+terraform.tfstate*
+.vagrant/
+
+# ===============================
+# Database Files
+# ===============================
+*.sqlite
+*.sqlite3
+*.db
+
+# ===============================
+# Certificate Files
+# ===============================
+ssl/
+certs/
+certificates/
+
+# ===============================
+# Debugging
+# ===============================
+debug.log
+.debug/
+
+# ===============================
+# Specific Project Files
+# ===============================
+# Adicione arquivos específicos do seu projeto aqui
+
+# Migrations (opcional - descomente se quiser incluir)
+# */migrations/
+
+# Static files development
+collected_static/
+staticfiles_build/
+
+# Local development scripts
+local_*
+dev_*
+test_*
+
+# Backup folders
+backup/
+backups/

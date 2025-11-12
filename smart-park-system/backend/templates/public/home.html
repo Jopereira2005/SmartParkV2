@@ -1,0 +1,219 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+  <div class="container">
+    <div class="row align-items-center min-vh-75">
+      <div class="col-lg-6">
+        <div class="hero-content">
+          <h1 class="display-3 fw-bold mb-4">
+            🅿️ <span class="text-gradient">SmartPark</span>
+          </h1>
+          <p class="lead text-muted mb-4 fs-5">
+            Sistema inteligente de gestão de estacionamentos com
+            <strong>monitoramento em tempo real</strong> através de câmeras e
+            IA.
+          </p>
+          <div class="d-flex flex-wrap gap-3 mb-4">
+            <a href="{% url 'public:about' %}" class="btn btn-smartpark btn-lg">
+              <i class="fas fa-info-circle me-2"></i>Descobrir Mais
+            </a>
+            <a
+              href="/api/docs/"
+              class="btn btn-outline-smartpark btn-lg"
+              target="_blank"
+            >
+              <i class="fas fa-code me-2"></i>Documentação API
+            </a>
+          </div>
+          <div class="hero-stats d-flex flex-wrap gap-4 mt-4">
+            <div class="stat-item">
+              <span class="stat-number text-primary fw-bold">24/7</span>
+              <span class="stat-label text-muted d-block">Monitoramento</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number text-success fw-bold">Real-time</span>
+              <span class="stat-label text-muted d-block">Dados</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number text-warning fw-bold">AI</span>
+              <span class="stat-label text-muted d-block">Powered</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6 text-center">
+        <div class="hero-image">
+          <div class="parking-visualization bg-white rounded-4 shadow-lg p-5">
+            <div class="parking-grid mb-4">
+              <div class="row g-2">
+                {% for i in "123456789" %}
+                <div class="col-4">
+                  <div
+                    class="parking-slot {% cycle 'occupied' 'free' 'occupied' %} rounded-3 p-3 text-center"
+                  >
+                    <i class="fas fa-car"></i>
+                    <small class="d-block mt-1">{{ forloop.counter }}</small>
+                  </div>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+            <div class="d-flex justify-content-center gap-3">
+              <div class="legend-item">
+                <span
+                  class="legend-color bg-success rounded-circle d-inline-block"
+                ></span>
+                <small class="text-muted">Livre</small>
+              </div>
+              <div class="legend-item">
+                <span
+                  class="legend-color bg-danger rounded-circle d-inline-block"
+                ></span>
+                <small class="text-muted">Ocupado</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Features Section -->
+<section class="py-5">
+  <div class="container">
+    <div class="row">
+      <div class="col-12 text-center mb-5">
+        <h2 class="display-5 fw-bold mb-3">Recursos Principais</h2>
+        <p class="lead text-muted">
+          Tecnologia de ponta para gestão inteligente
+        </p>
+      </div>
+    </div>
+    <div class="row g-4">
+      {% for feature in features %}
+      <div class="col-lg-4 col-md-6">
+        <div class="feature-card h-100 p-4 text-center">
+          <div class="feature-icon mb-3">
+            <span class="display-1">{{ feature.icon }}</span>
+          </div>
+          <h5 class="fw-bold mb-3">{{ feature.title }}</h5>
+          <p class="text-muted">{{ feature.description }}</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- Statistics Section -->
+<section class="stats-section">
+  <div class="container">
+    <div class="row text-center">
+      <div class="col-12 mb-4">
+        <h2 class="display-5 fw-bold text-white mb-3">Sistema em Números</h2>
+        <p class="text-white opacity-75">
+          Performance e confiabilidade comprovadas
+        </p>
+      </div>
+    </div>
+    <div class="row g-4">
+      <div class="col-lg-3 col-md-6 text-center">
+        <div class="stat-card bg-white bg-opacity-10 rounded-4 p-4">
+          <div class="display-4 fw-bold text-white">24/7</div>
+          <p class="text-white opacity-75 mb-0">Monitoramento Contínuo</p>
+        </div>
+      </div>
+      <div class="col-lg-3 col-md-6 text-center">
+        <div class="stat-card bg-white bg-opacity-10 rounded-4 p-4">
+          <div class="display-4 fw-bold text-white">99.9%</div>
+          <p class="text-white opacity-75 mb-0">Uptime do Sistema</p>
+        </div>
+      </div>
+      <div class="col-lg-3 col-md-6 text-center">
+        <div class="stat-card bg-white bg-opacity-10 rounded-4 p-4">
+          <div class="display-4 fw-bold text-white">&lt;100ms</div>
+          <p class="text-white opacity-75 mb-0">Tempo de Resposta</p>
+        </div>
+      </div>
+      <div class="col-lg-3 col-md-6 text-center">
+        <div class="stat-card bg-white bg-opacity-10 rounded-4 p-4">
+          <div class="display-4 fw-bold text-white">AI</div>
+          <p class="text-white opacity-75 mb-0">Computer Vision</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-5">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 mx-auto text-center">
+        <h2 class="display-5 fw-bold mb-4">
+          Pronto para Transformar seu Estacionamento?
+        </h2>
+        <p class="lead text-muted mb-4">
+          Junte-se à revolução da gestão inteligente de estacionamentos
+        </p>
+        <div class="d-flex flex-wrap justify-content-center gap-3">
+          <a href="{% url 'public:contact' %}" class="btn btn-smartpark btn-lg">
+            <i class="fas fa-envelope me-2"></i>Entrar em Contato
+          </a>
+          <a
+            href="{% url 'public:about' %}"
+            class="btn btn-outline-smartpark btn-lg"
+          >
+            <i class="fas fa-book me-2"></i>Saiba Mais
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .text-gradient {
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-stats .stat-number {
+    font-size: 1.5rem;
+  }
+
+  .parking-slot {
+    height: 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    transition: all 0.3s ease;
+  }
+
+  .parking-slot.free {
+    background-color: #dcfce7;
+    color: #166534;
+  }
+
+  .parking-slot.occupied {
+    background-color: #fecaca;
+    color: #991b1b;
+  }
+
+  .legend-color {
+    width: 12px;
+    height: 12px;
+    margin-right: 8px;
+  }
+
+  .min-vh-75 {
+    min-height: 75vh;
+  }
+</style>
+{% endblock %}
