@@ -1,0 +1,223 @@
+{% extends "client_backoffice/base.html" %}
+
+{% block page_title %}Meus Estabelecimentos{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+  <!-- Card de resumo -->
+  <div class="col-12">
+    <div class="stat-card">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h5 class="mb-0 fw-bold">Resumo dos Estabelecimentos</h5>
+        <button class="btn btn-primary">
+          <i class="fas fa-plus me-2"></i>Novo Estabelecimento
+        </button>
+      </div>
+
+      <div class="row g-3">
+        <div class="col-md-3">
+          <div
+            class="text-center p-3 rounded"
+            style="background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);"
+          >
+            <h3 class="mb-1 fw-bold" style="color: #1e40af;">8</h3>
+            <small class="text-muted">Total de Estabelecimentos</small>
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <div
+            class="text-center p-3 rounded"
+            style="background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);"
+          >
+            <h3 class="mb-1 fw-bold" style="color: #15803d;">7</h3>
+            <small class="text-muted">Ativos</small>
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <div
+            class="text-center p-3 rounded"
+            style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);"
+          >
+            <h3 class="mb-1 fw-bold" style="color: #d97706;">1</h3>
+            <small class="text-muted">Em Manutenção</small>
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <div
+            class="text-center p-3 rounded"
+            style="background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);"
+          >
+            <h3 class="mb-1 fw-bold" style="color: #dc2626;">0</h3>
+            <small class="text-muted">Offline</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-4 mt-2">
+  <!-- Lista de estabelecimentos -->
+  <div class="col-12">
+    <div class="stat-card">
+      <h5 class="mb-4 fw-bold">Lista de Estabelecimentos</h5>
+
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>Estabelecimento</th>
+              <th>Endereço</th>
+              <th>Estacionamentos</th>
+              <th>Total de Vagas</th>
+              <th>Status</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <div class="d-flex align-items-center">
+                  <div
+                    class="rounded me-3"
+                    style="width: 40px; height: 40px; background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); display: flex; align-items: center; justify-content: center;"
+                  >
+                    <i class="fas fa-shopping-cart text-white"></i>
+                  </div>
+                  <div>
+                    <h6 class="mb-0">Shopping Center Norte</h6>
+                    <small class="text-muted">Centro Comercial</small>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div>
+                  <div>Av. das Nações, 1234</div>
+                  <small class="text-muted">São Paulo - SP</small>
+                </div>
+              </td>
+              <td><span class="badge bg-info">3</span></td>
+              <td><strong>400</strong> vagas</td>
+              <td><span class="badge bg-success">Ativo</span></td>
+              <td>
+                <button class="btn btn-sm btn-outline-primary me-1">
+                  <i class="fas fa-eye"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-secondary">
+                  <i class="fas fa-edit"></i>
+                </button>
+              </td>
+            </tr>
+
+            <tr>
+              <td>
+                <div class="d-flex align-items-center">
+                  <div
+                    class="rounded me-3"
+                    style="width: 40px; height: 40px; background: linear-gradient(135deg, #059669 0%, #10b981 100%); display: flex; align-items: center; justify-content: center;"
+                  >
+                    <i class="fas fa-building text-white"></i>
+                  </div>
+                  <div>
+                    <h6 class="mb-0">Edifício Comercial Alpha</h6>
+                    <small class="text-muted">Escritórios</small>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div>
+                  <div>Rua Comercial, 567</div>
+                  <small class="text-muted">São Paulo - SP</small>
+                </div>
+              </td>
+              <td><span class="badge bg-info">2</span></td>
+              <td><strong>200</strong> vagas</td>
+              <td><span class="badge bg-success">Ativo</span></td>
+              <td>
+                <button class="btn btn-sm btn-outline-primary me-1">
+                  <i class="fas fa-eye"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-secondary">
+                  <i class="fas fa-edit"></i>
+                </button>
+              </td>
+            </tr>
+
+            <tr>
+              <td>
+                <div class="d-flex align-items-center">
+                  <div
+                    class="rounded me-3"
+                    style="width: 40px; height: 40px; background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%); display: flex; align-items: center; justify-content: center;"
+                  >
+                    <i class="fas fa-hospital text-white"></i>
+                  </div>
+                  <div>
+                    <h6 class="mb-0">Hospital Regional</h6>
+                    <small class="text-muted">Saúde</small>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div>
+                  <div>Av. da Saúde, 890</div>
+                  <small class="text-muted">São Paulo - SP</small>
+                </div>
+              </td>
+              <td><span class="badge bg-info">4</span></td>
+              <td><strong>300</strong> vagas</td>
+              <td><span class="badge bg-success">Ativo</span></td>
+              <td>
+                <button class="btn btn-sm btn-outline-primary me-1">
+                  <i class="fas fa-eye"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-secondary">
+                  <i class="fas fa-edit"></i>
+                </button>
+              </td>
+            </tr>
+
+            <tr>
+              <td>
+                <div class="d-flex align-items-center">
+                  <div
+                    class="rounded me-3"
+                    style="width: 40px; height: 40px; background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%); display: flex; align-items: center; justify-content: center;"
+                  >
+                    <i class="fas fa-graduation-cap text-white"></i>
+                  </div>
+                  <div>
+                    <h6 class="mb-0">Universidade Central</h6>
+                    <small class="text-muted">Educação</small>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div>
+                  <div>Campus Universitário</div>
+                  <small class="text-muted">São Paulo - SP</small>
+                </div>
+              </td>
+              <td><span class="badge bg-info">5</span></td>
+              <td><strong>600</strong> vagas</td>
+              <td><span class="badge bg-warning">Manutenção</span></td>
+              <td>
+                <button class="btn btn-sm btn-outline-primary me-1">
+                  <i class="fas fa-eye"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-secondary">
+                  <i class="fas fa-edit"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

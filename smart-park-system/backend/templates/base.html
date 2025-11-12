@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}SmartPark{% endblock %}</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <!-- Favicons -->
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico" />
+
+    {% block extra_css %}{% endblock %}
+
+    <style>
+      :root {
+        --smartpark-primary: #1e40af;
+        --smartpark-secondary: #475569;
+        --smartpark-success: #059669;
+        --smartpark-warning: #d97706;
+        --smartpark-danger: #dc2626;
+        --smartpark-light: #f8fafc;
+        --smartpark-dark: #0f172a;
+        --gradient-primary: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+        --gradient-secondary: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+      }
+
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, sans-serif;
+        line-height: 1.6;
+      }
+
+      .text-smartpark {
+        color: var(--smartpark-primary) !important;
+      }
+
+      .navbar {
+        backdrop-filter: blur(10px);
+        background: rgba(255, 255, 255, 0.95) !important;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      }
+
+      .navbar-brand {
+        font-weight: 700;
+        font-size: 1.5rem;
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .btn-smartpark {
+        background: var(--gradient-primary);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 6px rgba(30, 64, 175, 0.2);
+      }
+
+      .btn-smartpark:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 15px rgba(30, 64, 175, 0.3);
+        color: white;
+      }
+
+      .btn-outline-smartpark {
+        color: var(--smartpark-primary);
+        border: 2px solid var(--smartpark-primary);
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+
+      .btn-outline-smartpark:hover {
+        background: var(--smartpark-primary);
+        color: white;
+        transform: translateY(-2px);
+      }
+
+      .hero-section {
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+      }
+
+      .feature-card {
+        transition: all 0.3s ease;
+        border: none;
+        border-radius: 16px;
+        background: white;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      }
+
+      .feature-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 25px rgba(0, 0, 0, 0.1);
+      }
+
+      .stats-section {
+        background: var(--gradient-primary);
+        color: white;
+        border-radius: 20px;
+        padding: 3rem;
+        margin: 2rem 0;
+      }
+
+      .highlight-card {
+        transition: all 0.3s ease;
+        border: none;
+      }
+
+      .highlight-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15) !important;
+      }
+
+      .highlight-icon {
+        transition: transform 0.3s ease;
+      }
+
+      .highlight-card:hover .highlight-icon {
+        transform: scale(1.1);
+      }
+
+      .footer {
+        background: var(--smartpark-dark);
+        color: white;
+        margin-top: auto;
+      }
+
+      body {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+
+      main {
+        flex: 1;
+        padding-top: 80px; /* Espaço para navbar fixa */
+      }
+
+      .navbar-toggler {
+        border: none;
+      }
+
+      .nav-link {
+        color: var(--smartpark-secondary) !important;
+        transition: color 0.3s ease;
+      }
+
+      .nav-link:hover {
+        color: var(--smartpark-primary) !important;
+      }
+
+      .hover-opacity-100:hover {
+        opacity: 1 !important;
+      }
+
+      .dropdown-menu {
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+      }
+
+      .dropdown-menu {
+        border-radius: 8px;
+        border: 1px solid #e9ecef;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        padding: 0.5rem 0;
+      }
+
+      .dropdown-item {
+        padding: 0.75rem 1.25rem;
+        transition: background-color 0.15s ease;
+      }
+
+      .dropdown-item:hover {
+        background-color: #f8f9fa;
+      }
+
+      /* Melhorias na navegação */
+      .navbar-nav .nav-link {
+        position: relative;
+        transition: all 0.3s ease;
+        padding: 0.75rem 1rem;
+      }
+
+      .navbar-nav .nav-link:hover:not(.dropdown-toggle) {
+        color: var(--smartpark-primary) !important;
+        transform: translateY(-1px);
+      }
+
+      .navbar-nav .nav-link::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        width: 0;
+        height: 2px;
+        background: var(--smartpark-primary);
+        transition: all 0.3s ease;
+        transform: translateX(-50%);
+      }
+
+      .navbar-nav .nav-link:hover:not(.dropdown-toggle)::after {
+        width: 80%;
+      }
+
+      /* Garantir que o dropdown não seja afetado pelas animações */
+      .navbar-nav .dropdown-toggle:hover {
+        transform: none !important;
+      }
+
+      .navbar-nav .dropdown-toggle::after {
+        display: none !important;
+      }
+
+      /* Espaçamento responsivo */
+      @media (max-width: 991px) {
+        .navbar-nav .nav-item {
+          margin-right: 0 !important;
+          margin-bottom: 0.5rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg fixed-top">
+      <div class="container">
+        <a class="navbar-brand" href="{% url 'public:home' %}">
+          🅿️ SmartPark
+        </a>
+
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav me-auto">
+            {% block nav_links %}
+            <li class="nav-item me-3">
+              <a class="nav-link fw-medium" href="{% url 'public:about' %}"
+                >Sobre</a
+              >
+            </li>
+            <li class="nav-item me-3">
+              <a class="nav-link fw-medium" href="{% url 'public:contact' %}"
+                >Contato</a
+              >
+            </li>
+            <li class="nav-item me-3">
+              <a class="nav-link fw-medium" href="/api/docs/" target="_blank"
+                >API</a
+              >
+            </li>
+            {% endblock %}
+          </ul>
+
+          <ul class="navbar-nav">
+            {% block nav_user %}
+            <li class="nav-item dropdown">
+              <a
+                class="nav-link dropdown-toggle"
+                href="#"
+                id="navbarDropdown"
+                role="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                <i class="fas fa-user me-2"></i>Visitante
+              </a>
+
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li>
+                  <a class="dropdown-item" href="/admin/" target="_blank">
+                    <i class="fas fa-cog me-2"></i>Admin Backoffice
+                  </a>
+                </li>
+                <li>
+                  <a
+                    class="dropdown-item"
+                    href="{% url 'client_backoffice:login' %}"
+                    target="_blank"
+                  >
+                    <i class="fas fa-users me-2"></i>Client Backoffice
+                  </a>
+                </li>
+              </ul>
+            </li>
+            {% endblock %}
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main>
+      {% block messages %} {% if messages %}
+      <div class="container mt-3">
+        {% for message in messages %}
+        <div
+          class="alert alert-{{ message.tags }} alert-dismissible fade show"
+          role="alert"
+        >
+          {{ message }}
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="alert"
+          ></button>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %} {% endblock %} {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer py-5 mt-5">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-4 mb-4">
+            <h4 class="text-white mb-3">🅿️ SmartPark</h4>
+            <p class="text-light opacity-75 mb-3">
+              Sistema inteligente de gestão de estacionamentos com monitoramento
+              em tempo real através de IA e Computer Vision.
+            </p>
+            <div class="d-flex gap-3">
+              <a href="#" class="text-light opacity-75 hover-opacity-100"
+                ><i class="fab fa-github fa-lg"></i
+              ></a>
+              <a href="#" class="text-light opacity-75 hover-opacity-100"
+                ><i class="fab fa-linkedin fa-lg"></i
+              ></a>
+              <a
+                href="{% url 'public:contact' %}"
+                class="text-light opacity-75 hover-opacity-100"
+                ><i class="fas fa-envelope fa-lg"></i
+              ></a>
+            </div>
+          </div>
+          <div class="col-lg-2 col-md-6 mb-4">
+            <h6 class="text-white mb-3">Navegação</h6>
+            <ul class="list-unstyled">
+              <li class="mb-2">
+                <a
+                  href="{% url 'public:about' %}"
+                  class="text-light opacity-75 text-decoration-none hover-opacity-100"
+                  >Sobre</a
+                >
+              </li>
+              <li class="mb-2">
+                <a
+                  href="{% url 'public:contact' %}"
+                  class="text-light opacity-75 text-decoration-none hover-opacity-100"
+                  >Contato</a
+                >
+              </li>
+            </ul>
+          </div>
+          <div class="col-lg-2 col-md-6 mb-4">
+            <h6 class="text-white mb-3">Desenvolvedores</h6>
+            <ul class="list-unstyled">
+              <li class="mb-2">
+                <a
+                  href="/api/docs/"
+                  class="text-light opacity-75 text-decoration-none hover-opacity-100"
+                  >API Docs</a
+                >
+              </li>
+              <li class="mb-2">
+                <a
+                  href="/api/schema/"
+                  class="text-light opacity-75 text-decoration-none hover-opacity-100"
+                  >OpenAPI Schema</a
+                >
+              </li>
+              <li class="mb-2">
+                <a
+                  href="{% url 'public:health_check' %}"
+                  class="text-light opacity-75 text-decoration-none hover-opacity-100"
+                  >Status</a
+                >
+              </li>
+            </ul>
+          </div>
+          <div class="col-lg-4 mb-4">
+            <h6 class="text-white mb-3">Projeto Acadêmico</h6>
+            <p class="text-light opacity-75 mb-2">
+              <strong
+                >UPX4 - Experiência do Usuário, Usabilidade e Desenvolvimento
+                Web</strong
+              >
+            </p>
+            <p class="text-light opacity-75 mb-0">
+              Demonstrando tecnologias modernas aplicadas a Smart Cities
+            </p>
+            <div class="mt-3">
+              <span class="badge bg-light text-dark me-2">Django</span>
+              <span class="badge bg-light text-dark me-2">Bootstrap</span>
+              <span class="badge bg-light text-dark me-2">Computer Vision</span>
+            </div>
+          </div>
+        </div>
+        <hr class="border-light opacity-25 my-4" />
+        <div class="row align-items-center">
+          <div class="col-md-6">
+            <p class="text-light opacity-75 mb-0">
+              &copy; 2024 SmartPark. Desenvolvido para UPX4.
+            </p>
+          </div>
+          <div class="col-md-6 text-md-end">
+            <small class="text-light opacity-50"
+              >v1.0.0 • Sistema em produção</small
+            >
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    {% block extra_js %}{% endblock %}
+  </body>
+</html>

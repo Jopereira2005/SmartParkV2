@@ -1,0 +1,14 @@
+-r base.in
+-r scripts.in
+ipython
+pytest
+pytest-django
+pytest-cov
+model-bakery
+coverage
+black
+ruff
+mypy
+pre-commit
+pip-tools
+pydbml

@@ -1,0 +1,266 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 mx-auto text-center">
+        <h1 class="display-3 fw-bold text-dark mb-4">
+          <i class="fas fa-envelope me-3 text-smartpark"></i>Entre em Contato
+        </h1>
+        <p class="lead text-muted mb-5">
+          Estamos aqui para ajudar você a implementar a solução SmartPark
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Contact Highlight -->
+<section class="py-5 bg-light">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-10 mx-auto text-center">
+        <div class="highlight-card bg-white rounded-4 shadow-lg p-5">
+          <div class="row align-items-center">
+            <div class="col-lg-3 mb-4 mb-lg-0">
+              <div class="highlight-icon">
+                <i class="fas fa-headset text-smartpark" style="font-size: 4rem;"></i>
+              </div>
+            </div>
+            <div class="col-lg-9">
+              <h3 class="fw-bold mb-3">Suporte Especializado</h3>
+              <p class="lead text-muted mb-0">
+                Nossa equipe está pronta para ajudar você a implementar a solução SmartPark
+                e garantir o sucesso do seu projeto de Smart Cities.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Contact Methods -->
+<section class="py-5">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-4 col-md-6">
+        <div
+          class="contact-card h-100 text-center p-5 rounded-4 shadow-sm bg-white"
+        >
+          <div class="contact-icon mb-4">
+            <div
+              class="icon-circle bg-primary bg-opacity-10 rounded-circle mx-auto d-flex align-items-center justify-content-center"
+              style="width: 80px; height: 80px"
+            >
+              <i
+                class="fas fa-envelope text-primary"
+                style="font-size: 2rem"
+              ></i>
+            </div>
+          </div>
+          <h5 class="fw-bold mb-3">Email Comercial</h5>
+          <p class="text-muted mb-4">Para propostas e parcerias comerciais</p>
+          <a href="mailto:contato@smartpark.com" class="btn btn-smartpark">
+            <i class="fas fa-paper-plane me-2"></i>contato@smartpark.com
+          </a>
+        </div>
+      </div>
+
+      <div class="col-lg-4 col-md-6">
+        <div
+          class="contact-card h-100 text-center p-5 rounded-4 shadow-sm bg-white"
+        >
+          <div class="contact-icon mb-4">
+            <div
+              class="icon-circle bg-success bg-opacity-10 rounded-circle mx-auto d-flex align-items-center justify-content-center"
+              style="width: 80px; height: 80px"
+            >
+              <i class="fas fa-code text-success" style="font-size: 2rem"></i>
+            </div>
+          </div>
+          <h5 class="fw-bold mb-3">Suporte Técnico</h5>
+          <p class="text-muted mb-4">Documentação completa da API</p>
+          <a
+            href="/api/docs/"
+            class="btn btn-outline-smartpark"
+            target="_blank"
+          >
+            <i class="fas fa-book me-2"></i>Ver Documentação
+          </a>
+        </div>
+      </div>
+
+      <div class="col-lg-4 col-md-6">
+        <div
+          class="contact-card h-100 text-center p-5 rounded-4 shadow-sm bg-white"
+        >
+          <div class="contact-icon mb-4">
+            <div
+              class="icon-circle bg-info bg-opacity-10 rounded-circle mx-auto d-flex align-items-center justify-content-center"
+              style="width: 80px; height: 80px"
+            >
+              <i class="fas fa-heartbeat text-info" style="font-size: 2rem"></i>
+            </div>
+          </div>
+          <h5 class="fw-bold mb-3">Status do Sistema</h5>
+          <p class="text-muted mb-4">Monitoramento em tempo real</p>
+          <a
+            href="{% url 'public:health_check' %}"
+            class="btn btn-outline-info"
+          >
+            <i class="fas fa-chart-line me-2"></i>Verificar Status
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- System Information -->
+<section class="py-5 bg-light">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-10 mx-auto">
+        <div class="info-card bg-white rounded-4 shadow-sm p-5">
+          <div class="row align-items-center">
+            <div class="col-lg-3 text-center mb-4 mb-lg-0">
+              <div class="system-icon">
+                <i
+                  class="fas fa-info-circle text-primary"
+                  style="font-size: 4rem"
+                ></i>
+              </div>
+            </div>
+            <div class="col-lg-9">
+              <h3 class="fw-bold mb-4">Informações do Sistema</h3>
+              <div class="row g-4">
+                <div class="col-md-6">
+                  <div class="info-item">
+                    <h6 class="text-muted mb-2">Versão</h6>
+                    <p class="fw-bold mb-3">
+                      1.0.0 <span class="badge bg-success ms-2">Estável</span>
+                    </p>
+                  </div>
+                  <div class="info-item">
+                    <h6 class="text-muted mb-2">Tipo de Projeto</h6>
+                    <p class="fw-bold mb-3">
+                      <i class="fas fa-graduation-cap text-warning me-2"></i
+                      >Acadêmico (UPX4)
+                    </p>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="info-item">
+                    <h6 class="text-muted mb-2">Status Operacional</h6>
+                    <p class="fw-bold mb-3">
+                      <span class="badge bg-success">
+                        <i class="fas fa-check-circle me-1"></i>Online 24/7
+                      </span>
+                    </p>
+                  </div>
+                  <div class="info-item">
+                    <h6 class="text-muted mb-2">Suporte</h6>
+                    <p class="fw-bold mb-3">
+                      <i class="fas fa-users text-info me-2"></i>Comunidade
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Academic Project Notice -->
+<section class="py-5">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 mx-auto">
+        <div
+          class="academic-notice bg-gradient-primary rounded-4 p-5 text-white"
+        >
+          <div class="row align-items-center">
+            <div class="col-lg-2 text-center mb-3 mb-lg-0">
+              <i class="fas fa-graduation-cap" style="font-size: 3rem"></i>
+            </div>
+            <div class="col-lg-10">
+              <h4 class="fw-bold mb-3">💡 Projeto Acadêmico - UPX4</h4>
+              <p class="mb-3 opacity-90">
+                Este sistema foi desenvolvido como parte do projeto UPX4,
+                demonstrando a aplicação de tecnologias modernas em soluções de
+                Smart Cities.
+              </p>
+              <p class="mb-0 opacity-75">
+                <strong>Para uso comercial:</strong> Entre em contato para
+                discussão de implementação, customizações e licenciamento.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Quick Links -->
+<section class="py-5 bg-light">
+  <div class="container">
+    <div class="row">
+      <div class="col-12 text-center">
+        <h3 class="fw-bold mb-4">Links Úteis</h3>
+        <div class="d-flex flex-wrap justify-content-center gap-3">
+          <a href="{% url 'public:home' %}" class="btn btn-outline-smartpark">
+            <i class="fas fa-home me-2"></i>Página Inicial
+          </a>
+          <a href="{% url 'public:about' %}" class="btn btn-outline-smartpark">
+            <i class="fas fa-info-circle me-2"></i>Sobre o Projeto
+          </a>
+          <a
+            href="/api/docs/"
+            class="btn btn-outline-smartpark"
+            target="_blank"
+          >
+            <i class="fas fa-code me-2"></i>Documentação API
+          </a>
+          <a href="/admin/" class="btn btn-outline-smartpark" target="_blank">
+            <i class="fas fa-cog me-2"></i>Painel Admin
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .bg-gradient-primary {
+    background: linear-gradient(
+      135deg,
+      var(--smartpark-primary) 0%,
+      var(--smartpark-secondary) 100%
+    );
+  }
+
+  .contact-card:hover {
+    transform: translateY(-5px);
+    transition: all 0.3s ease;
+  }
+
+  .info-card:hover {
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1) !important;
+    transition: all 0.3s ease;
+  }
+
+  .academic-notice {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+</style>
+{% endblock %}
