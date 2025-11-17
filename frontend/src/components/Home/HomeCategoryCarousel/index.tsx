@@ -16,7 +16,7 @@ interface CategoryCarouselProps {
   navigateFilter?: (id_category: Category) => void; 
 }
 
-const CategoryCarousel = ({ categories, navigateFilter }: CategoryCarouselProps) => {
+export default function CategoryCarousel({ categories, navigateFilter }: CategoryCarouselProps) {
   const settings = {
     modules: [Navigation, Pagination, Grid],
     spaceBetween: 10,
@@ -46,4 +46,3 @@ const CategoryCarousel = ({ categories, navigateFilter }: CategoryCarouselProps)
     </Swiper>
   );
 };
-export default CategoryCarousel;

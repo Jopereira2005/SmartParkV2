@@ -8,5 +8,6 @@ export interface Establishment {
   id_address?: string;
   id_category?: string;
   avatar?: string;
+  background?: string;
   address?: Address;
 }

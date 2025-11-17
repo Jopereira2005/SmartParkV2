@@ -29,7 +29,7 @@ export default function SearchBarItem({ establishment, saveFunction, navigateTo,
         />
         <div className={ styled.search_bar_item__info__texts }>
           <h2 className={ styled.search_bar_item__info__texts__name }>{ establishment?.name }</h2>
-          <p className={ styled.search_bar_item__info__texts__address }>| { establishment?.address } - { establishment?.district }, { establishment?.city } - { establishment?.state }, { establishment?.cep }</p>
+          <p className={ styled.search_bar_item__info__texts__address }>| { establishment?.address?.address } - { establishment?.address?.district }, { establishment?.address?.city } - { establishment?.address?.state }, { establishment?.address?.cep }</p>
         </div>
       </div>
       <div className={ styled.search_bar_item__others }>
