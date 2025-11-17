@@ -1,0 +1,90 @@
+@use '@/styles/mixins' as *;
+
+.slot_container {  
+  width: 100%;
+  background-color: var(--light-color);
+  padding: 10px 15px 0px 15px;
+  border-radius: 20px;
+  cursor: pointer;
+  @include box-shadow;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+
+
+  &__header {
+    @include flex(row, space-between, center);
+
+    &__title {
+      font-size: 1.5rem;
+      font-weight: var(--font-bold);
+      color: var(--gray-scale-dark);
+      @include transition;
+
+      &__open {
+        color: var(--dark-color);
+        @include transition;
+      }
+    }
+
+    &__icon {
+      transform: rotate(90deg);
+      color: var(--gray-scale-dark);
+      @include transition;
+
+      &__open {
+        transform: rotate(-90deg);
+        color: var(--secondary-color);
+        @include transition;
+      }
+    }
+  }
+
+  &__content {
+    @include flex(column, flex-end, center);
+    height: 10px;
+    @include transition;
+
+    &__open {
+      height: 170px;
+      @include transition;
+    }
+
+    &__container {
+      width: 100%;
+      background-color: var(--gray-scale-light);
+      border-radius: 2px 2px 15px 15px;
+      margin-bottom: 15px;
+      height: 0px;
+      opacity: 0;
+
+      @include transition;
+
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(148px, 1fr));
+      gap: 10px;
+
+      justify-items: center;
+      align-items: start; 
+      overflow-y: auto;
+
+      &::-webkit-scrollbar {
+        width: 4px;
+      }
+
+      &::-webkit-scrollbar-track {
+        background: transparent;     
+      }
+
+      &::-webkit-scrollbar-thumb {
+        border-radius: 20px;       
+        border: 3px solid var(--secondary-color);  
+      }
+   
+      &__open {
+        height: 150px;
+        padding: 10px;
+        opacity: 1;
+        @include transition;
+      }
+    }
+  }
+}

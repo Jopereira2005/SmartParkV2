@@ -1,0 +1,48 @@
+@use '@/styles/mixins' as *;
+
+.search_bar_item {
+  width: 100%;
+  @include flex(row, space-between, center);
+  background-color: var(--light-color);
+  padding: 10px 15px;
+  border-radius: 10px;
+  @include box-shadow;
+  cursor: pointer;
+
+  &__info {
+    @include flex(row, flex-start, center);
+    gap: 10px;
+    width: fit-content;
+
+    &__texts {
+      @include flex;
+      gap: 2px;
+
+      &__name {
+        font-size: 1.5rem;
+        color: var(--dark-color);
+        font-weight: var(--font-bold);
+      }
+  
+      &__slot {
+        font-size: 1rem;
+        color: var(--gray-scale-dark);
+        font-weight: var(--font-medium);
+        @include text-truncate;
+      }
+    }
+  }
+
+  &__status {
+    color: var(--light-color);
+    font-weight: var(--font-bold);
+    background-color: var(--success-color);
+    padding: 5px 10px;
+    border-radius: 5px;
+    margin-left: 5px;
+
+    &__ocupped {
+      background-color: var(--danger-color);
+    }
+  }
+}

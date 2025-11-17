@@ -1,0 +1,142 @@
+@use '@/styles/mixins' as *;
+
+.header {
+  @include flex(row, space-between, center);
+  position: fixed;
+  width: 100%;
+  padding: 20px 30px;
+  background-color: var(--secondary-color);
+  @include box-shadow;
+  z-index: 5;
+
+  &__logo {
+    @include flex;
+    gap: 5px;
+    text-decoration: none;
+    z-index: 1;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+
+
+    img {
+      max-width: none;
+    }
+
+    &__text {
+      font-size: 25px;
+      line-height: 1;
+      color: var(--light-color);
+      font-weight: var(--font-medium);
+      opacity: 1;
+      @include transition();
+
+      span {
+        font-weight: var(--font-bold);
+      }
+    }
+
+    &__text_open {
+      color: var(--light-color);
+      opacity: 0;
+      @include text-truncate;
+      @include transition;
+    }
+  }
+
+  &__search_bar {
+    @include flex(column, center, flex-end);
+    width: 100%;
+    position: absolute;
+    right: 30px;
+
+    &__container {
+      @include flex;
+      z-index: 2;
+      width: 125px;
+      height: 35px;
+      background-color: var(--light-color);
+      padding: 5px 10px;
+      border-radius: 15px;
+      @include box-shadow;
+      @include transition;
+
+      &__icon {
+        color: var(--gray-scale-dark);
+        width: 20px;
+        height: 20px;
+        margin-right: 5px;
+        @include transition;
+        
+        path {
+          fill: transparent;
+          stroke-width: 4px;
+        }
+      }
+
+      &__input {
+        width: 100%; 
+        background-color: transparent;
+        outline: none;
+        border: none;
+        color: var(--dark-color);
+        font-size: 1.2rem;
+
+        &::placeholder {
+          color: var(--gray-scale-dark);
+        }
+      }
+
+      &__open {
+        width: calc(100% - 110px);
+        @include transition;
+      }
+      
+      &:focus-within {
+        .header__search_bar__container__icon {
+          @include transition;
+          color: var(--dark-color);
+        }
+      }
+    }
+    
+    &__list {
+      position: absolute;
+      top: 40px;
+      z-index: 15;
+      @include flex(column, flex-start, center);
+      max-height: 485px;
+      overflow-y: auto;
+      margin-top: 10px;
+      list-style: none;
+      width: calc(100% - 60px);
+      background-color: var(--gray-scale-light);
+      border: 10px solid var(--light-color);
+      border-radius: 15px;
+      padding: 10px;
+      gap: 5px;
+      @include box-shadow;
+
+      &::-webkit-scrollbar {
+        width: 5px;
+      }
+      
+      &::-webkit-scrollbar-track {
+        background: transparent;     
+      }
+      
+      &::-webkit-scrollbar-thumb {
+        border-radius: 20px;       
+        border: 3px solid var(--gray-scale);  
+      }
+
+      &__message {
+        font-size: 1.5rem;
+        font-weight: var(--font-bold);
+        color: var(--dark-color);
+      }
+
+      &__open {
+        width: 100%;
+      }
+    }
+  }
+}
