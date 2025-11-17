@@ -13,7 +13,7 @@ import { Establishment } from '@/interfaces/Establishment';
 
 import { ArrowIcon } from '@/assets/Common/Arrow';
 
-export default function Search() {
+export default function SearchPage() {
   const categories: Category[] = [
     { id_category: "1", name: "Estacionamentos", image: "/images/Estacionamento.png" },
     { id_category: "2", name: "Supermercados", image: "/images/Supermercado.png" },

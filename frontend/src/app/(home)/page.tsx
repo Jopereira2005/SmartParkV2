@@ -11,7 +11,7 @@ import { Establishment } from '@/interfaces/Establishment';
 
 import { ArrowIcon } from '@/assets/Common/Arrow';
 
-export default function Home() {
+export default function HomePage() {
   const categories: Category[] = [
     { id_category: "1", name: "Estacionamentos", image: "/images/Estacionamento.png" },
     { id_category: "2", name: "Supermercados", image: "/images/Supermercado.png" },
@@ -47,7 +47,6 @@ export default function Home() {
             height={ 90 }
             priority
           />
-
           <div className={ styled.main__welcome__texts }>
             <h1 className={ styled.main__welcome__texts__title }>Bem Vindo, Mr Paxe 👋</h1>
             <div className={ styled.main__welcome__texts__div }></div>

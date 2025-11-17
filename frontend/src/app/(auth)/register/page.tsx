@@ -11,7 +11,7 @@ import { FacebookIcon } from "@/assets/Auth/Facebook";
 import { GoogleIcon } from "@/assets/Auth/Google";
 import { TwitterIcon } from "@/assets/Auth/Twitter";
 
-export default function Register() {
+export default function RegisterPage() {
   // const { login } = useAuth();
   const [firstname, setFirstname] = useState('');
   const [lastname, setLastname] = useState('');

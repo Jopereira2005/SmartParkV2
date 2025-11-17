@@ -13,7 +13,7 @@ import { FacebookIcon } from "@/assets/Auth/Facebook";
 import { GoogleIcon } from "@/assets/Auth/Google";
 import { TwitterIcon } from "@/assets/Auth/Twitter";
 
-export default function Login() {
+export default function LoginPage() {
   // const { login } = useAuth();
   const [credentials, setCredentials] = useState({ username: '', password: '' });
 

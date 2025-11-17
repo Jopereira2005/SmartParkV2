@@ -1,7 +1,7 @@
 @use '@/styles/mixins' as *;
 
 .home {
-  color: var(--gray-scale-light);
+  background-color: var(--gray-scale-light);
   min-height: 100vh;
 }
 
