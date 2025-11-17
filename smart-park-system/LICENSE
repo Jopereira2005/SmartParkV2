@@ -1,0 +1,61 @@
+MIT License
+
+Copyright (c) 2025 Smart Park System
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+---
+
+SMART PARK SYSTEM - PROJETO EDUCACIONAL
+=======================================
+
+Este software foi desenvolvido como parte de um projeto educacional universitário
+para demonstrar conceitos de desenvolvimento de software, arquitetura de sistemas,
+e integração de tecnologias modernas.
+
+CARACTERÍSTICAS PRINCIPAIS:
+- Sistema de gerenciamento de estacionamentos inteligentes
+- Arquitetura multi-tenant para suporte a múltiplos clientes
+- API RESTful desenvolvida em Django/Python
+- Integração com hardware de monitoramento (câmeras, sensores)
+- Sistema de eventos em tempo real
+- Interface administrativa completa
+- Cobertura de testes de 100%
+
+TECNOLOGIAS UTILIZADAS:
+- Django 4.2+ (Framework Web)
+- Django REST Framework (API)
+- PostgreSQL (Banco de Dados)
+- Python 3.11+ (Linguagem de Programação)
+- Docker (Containerização)
+- Model Bakery (Testes)
+- Coverage.py (Cobertura de Testes)
+
+PROPÓSITO EDUCACIONAL:
+Este projeto foi criado exclusivamente para fins educacionais e de aprendizado,
+demonstrando boas práticas de desenvolvimento de software, arquitetura de sistemas,
+testes automatizados e integração de tecnologias modernas.
+
+O código-fonte está disponível para estudo, análise e uso educacional,
+respeitando os termos da licença MIT acima.
+
+Para mais informações sobre o projeto, consulte a documentação
+disponível no diretório /docs/ deste repositório.
+
+Desenvolvido como parte do programa acadêmico da UPX4 - Facens.

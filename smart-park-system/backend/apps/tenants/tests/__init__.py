@@ -1,0 +1,1 @@
+# Testes para a app tenants

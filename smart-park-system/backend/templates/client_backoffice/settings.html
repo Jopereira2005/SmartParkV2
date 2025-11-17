@@ -1,0 +1,122 @@
+{% extends "client_backoffice/base.html" %}
+
+{% block page_title %}Configurações{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+    <div class="col-xl-8">
+        <div class="stat-card">
+            <h5 class="mb-4 fw-bold">Informações do Perfil</h5>
+            
+            <form>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Nome Completo</label>
+                        <input type="text" class="form-control" value="João Silva" placeholder="Seu nome completo">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" value="joao.silva@empresa.com" placeholder="Seu email">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Telefone</label>
+                        <input type="tel" class="form-control" value="(11) 99999-9999" placeholder="Seu telefone">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Empresa</label>
+                        <input type="text" class="form-control" value="Empresa XYZ Ltda" placeholder="Nome da empresa">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Endereço</label>
+                        <input type="text" class="form-control" value="Rua das Empresas, 123 - São Paulo, SP" placeholder="Endereço completo">
+                    </div>
+                </div>
+                
+                <hr class="my-4">
+                
+                <h6 class="mb-3 fw-bold">Alterar Senha</h6>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Senha Atual</label>
+                        <input type="password" class="form-control" placeholder="Digite sua senha atual">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Nova Senha</label>
+                        <input type="password" class="form-control" placeholder="Digite a nova senha">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Confirmar Nova Senha</label>
+                        <input type="password" class="form-control" placeholder="Confirme a nova senha">
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary me-2">
+                        <i class="fas fa-save me-2"></i>Salvar Alterações
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary">
+                        <i class="fas fa-times me-2"></i>Cancelar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div class="col-xl-4">
+        <div class="stat-card mb-4">
+            <h5 class="mb-4 fw-bold">Notificações</h5>
+            
+            <div class="form-check form-switch mb-3">
+                <input class="form-check-input" type="checkbox" id="emailNotifications" checked>
+                <label class="form-check-label" for="emailNotifications">
+                    Notificações por Email
+                </label>
+            </div>
+            
+            <div class="form-check form-switch mb-3">
+                <input class="form-check-input" type="checkbox" id="smsNotifications">
+                <label class="form-check-label" for="smsNotifications">
+                    Notificações por SMS
+                </label>
+            </div>
+            
+            <div class="form-check form-switch mb-3">
+                <input class="form-check-input" type="checkbox" id="alertsHigh" checked>
+                <label class="form-check-label" for="alertsHigh">
+                    Alertas de Alta Prioridade
+                </label>
+            </div>
+            
+            <div class="form-check form-switch mb-3">
+                <input class="form-check-input" type="checkbox" id="weeklyReports" checked>
+                <label class="form-check-label" for="weeklyReports">
+                    Relatórios Semanais
+                </label>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <h5 class="mb-4 fw-bold">Informações da Conta</h5>
+            
+            <div class="mb-3">
+                <small class="text-muted">Plano Atual</small>
+                <div class="fw-bold">SmartPark Premium</div>
+            </div>
+            
+            <div class="mb-3">
+                <small class="text-muted">Estabelecimentos</small>
+                <div class="fw-bold">8 / 10</div>
+            </div>
+            
+            <div class="mb-3">
+                <small class="text-muted">Próxima Renovação</small>
+                <div class="fw-bold">15 de Janeiro, 2026</div>
+            </div>
+            
+            <button class="btn btn-outline-primary btn-sm w-100">
+                <i class="fas fa-crown me-2"></i>Gerenciar Plano
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}

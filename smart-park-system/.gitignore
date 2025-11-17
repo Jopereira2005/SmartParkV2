@@ -1,0 +1,16 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+.env.template
+*.sqlite3
+.DS_Store
+.trunk/
+.vscode/
+.coverage
+htmlcov/
+coverage.xml
+.pytest_cache/
+.mypy_cache/
+*.log
+schema.yml
