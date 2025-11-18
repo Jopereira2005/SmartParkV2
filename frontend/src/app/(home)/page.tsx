@@ -1,17 +1,24 @@
-"use client";
+"use server";
 import Image from "next/image";
 import styled from "./style.module.scss";
 
+import WelcomeCard from '@/components/Common/WelcomeCard'
 import CategoryCarousel from '@/components/Home/HomeCategoryCarousel'
 import EstablishmentContainer from '@/components/Common/EstablishmentContainer'
+
 import NavBar from '@/components/Common/NavBar';
 
+import { Address } from '@/interfaces/Address';
 import { Category } from '@/interfaces/Category';
 import { Establishment } from '@/interfaces/Establishment';
 
 import { ArrowIcon } from '@/assets/Common/Arrow';
 
-export default function HomePage() {
+import { getUser } from '@/lib/auth/getUser';
+
+export default async function HomePage() {
+  const { isLogged, user } = await getUser();
+
   const categories: Category[] = [
     { id_category: "1", name: "Estacionamentos", image: "/images/Estacionamento.png" },
     { id_category: "2", name: "Supermercados", image: "/images/Supermercado.png" },
@@ -35,40 +42,31 @@ export default function HomePage() {
     { id_establishment: "6", name: "Facens", description: "Faculdade de Engenharia de Sorocaba", address: { address: "Rodovia Senador José Ermírio de Moraes, 1425", district: "Jardim Constantino Matucci", city: "Sorocaba", state: "SP", cep: "18085-784" } }
   ];
 
+  const address: Address = {
+    id_address: "1",
+    address: "R.Smart Park, 98", 
+    district: "Conj. Hab Eng da Computação", 
+    city: "Sorocaba", 
+    state: "SP", 
+    cep: "18085-784" 
+  }
+
   return (
     <div className={ styled.home }>
       <div className={ styled.main }>
-        <div className={ styled.main__welcome }>
-          <Image
-            className={ styled.main__welcome__image }
-            src="/images/Avatar.png" 
-            alt="Avatar" 
-            width={ 90 } 
-            height={ 90 }
-            priority
-          />
-          <div className={ styled.main__welcome__texts }>
-            <h1 className={ styled.main__welcome__texts__title }>Bem Vindo, Mr Paxe 👋</h1>
-            <div className={ styled.main__welcome__texts__div }></div>
-            <div className={ styled.main__welcome__texts__address_container }>
-              <div className={ styled.main__welcome__texts__address_container__address }>
-                <h2 className={ styled.main__welcome__texts__address_container__address__title }>R.Smart Park, 98</h2>
-                <p className={ styled.main__welcome__texts__address_container__address__description }>Conj. Hab Eng da Computação - Facens, Sorocaba - SP</p>
-              </div>
-              <ArrowIcon className={ styled.main__welcome__texts__address_container__arrow } />
-            </div>
-          </div>
-        </div>
+        <WelcomeCard 
+          User={ user } 
+          Address={ address || null} 
+          isLogged={ isLogged } 
+        />
         <div className={ styled.main__categories }>
           <h1 className={ styled.main__categories__title }>Categoria</h1>
           <CategoryCarousel
             categories={ categories }
-            navigateFilter={() => {}}
           />
         </div>
         <EstablishmentContainer
           establishments={ establishments }
-          navigateToEstablishment={() => {}}
         />
       </div>
       <NavBar />

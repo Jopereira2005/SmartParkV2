@@ -1,7 +1,7 @@
 import axios from "axios";
 import { cookies } from "next/headers";
 
-const apiURL = "http://localhost:8000";
+const apiURL = "https://8abf79ac21be.ngrok-free.app";
 
 /* ============================================================
     1. AXIOS — Somente para login (sem token)

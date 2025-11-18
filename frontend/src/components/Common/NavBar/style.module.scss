@@ -12,7 +12,6 @@
 
   background-color: var(--light-color);
   width: calc(100% - 30px);
-  max-width: 386px;
   margin: 0px 15px 15px;
   padding: 10px 10px;
   border-radius: 10px;
@@ -25,8 +24,9 @@
     align-items: center;
     cursor: pointer;
     width: 100px;
-    @include transition;
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    text-decoration: none;
+    @include transition;
 
     .icon {
       font-size: 25px;
@@ -39,16 +39,19 @@
       font-size: 1.2rem;
       font-weight: var(--font-medium);
       line-height: 1.2;
+      @include transition;
     }
   }
 
   &__item_active {
     .icon, .text {
       color: var(--secondary-color);
+      @include transition;
     }
 
     .text {
       font-weight: var(--font-bold);
+      @include transition;
     }
   } 
 }
