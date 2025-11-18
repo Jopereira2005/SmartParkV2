@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from django.utils import timezone
+from .models import Address
 
 
 class BaseModelSerializer(serializers.ModelSerializer):
@@ -63,3 +64,26 @@ class ValidationMixin:
         if value and self.Meta.model.objects.filter(public_id=value).exists():
             raise serializers.ValidationError("public_id já existe")
         return value
+
+
+class AddressSerializer(serializers.ModelSerializer):
+    """
+    Serializer para o modelo Address
+    """
+    
+    class Meta:
+        model = Address
+        fields = [
+            'id',
+            'street',
+            'number',
+            'complement',
+            'neighborhood',
+            'city',
+            'state',
+            'postal_code',
+            'country',
+            'created_at',
+            'updated_at',
+        ]
+        read_only_fields = ['id', 'created_at', 'updated_at']

@@ -1,10 +1,13 @@
 from rest_framework import generics, status, permissions
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.db.models import Q
-from drf_spectacular.utils import extend_schema, extend_schema_view
+from django.contrib.contenttypes.models import ContentType
+from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiResponse
+from apps.core.models import Address
 
 from .models import (
     StoreTypes,
@@ -19,6 +22,9 @@ from .models import (
 from .serializers import (
     StoreTypeSerializer,
     EstablishmentSerializer,
+    CreateEstablishmentWithAddressSerializer,
+    UpdateEstablishmentAddressSerializer,
+    UpdateEstablishmentWithAddressSerializer,
     LotSerializer,
     SlotSerializer,
     SlotTypeSerializer,
@@ -67,7 +73,7 @@ class StoreTypeListView(
 ):
     queryset = StoreTypes.objects.all()
     serializer_class = StoreTypeSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
     search_fields = ["name"]
 
     def get_queryset(self):
@@ -109,12 +115,26 @@ class EstablishmentListCreateView(
 ):
     serializer_class = EstablishmentSerializer
     permission_classes = [IsClientMember]
-    search_fields = ["name", "address", "city", "state"]
+    search_fields = ["name"]
 
     def get_queryset(self):
         """Override to ensure SearchMixin is called"""
         queryset = super().get_queryset()
         return apply_search_filter(self, queryset)
+
+
+@extend_schema_view(
+    post=extend_schema(
+        summary="Create establishment with address",
+        description="Create a new establishment with address information for client",
+        tags=["Tenants - Establishments"],
+    ),
+)
+class EstablishmentCreateWithAddressView(
+    TenantViewSetMixin, generics.CreateAPIView
+):
+    serializer_class = CreateEstablishmentWithAddressSerializer
+    permission_classes = [IsClientMember]
 
 
 @extend_schema_view(
@@ -265,7 +285,7 @@ class SlotTypeListView(
 ):
     queryset = SlotTypes.objects.all()
     serializer_class = SlotTypeSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
     search_fields = ["name"]
 
     def get_queryset(self):
@@ -284,7 +304,7 @@ class VehicleTypeListView(
 ):
     queryset = VehicleTypes.objects.all()
     serializer_class = VehicleTypeSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
     search_fields = ["name"]
 
     def get_queryset(self):
@@ -508,3 +528,91 @@ def public_slot_status_view(request, establishment_id):
         )
 
     return Response(data)
+
+
+# ==================== ESTABLISHMENT ADDRESS MANAGEMENT ====================
+
+
+class UpdateEstablishmentAddressView(APIView):
+    """
+    View para atualizar apenas o endereço do estabelecimento
+    """
+    permission_classes = [IsClientAdminForClient]
+
+    @extend_schema(
+        summary="Update Establishment Address",
+        description="Update only the establishment's address",
+        request=UpdateEstablishmentAddressSerializer,
+        responses={
+            200: OpenApiResponse(description="Address updated successfully"),
+            400: OpenApiResponse(description="Validation error"),
+            404: OpenApiResponse(description="Establishment not found"),
+        },
+        tags=["Tenants - Establishments"],
+    )
+    def patch(self, request, pk):
+        establishment = get_object_or_404(Establishments, pk=pk)
+        
+        # Verificar permissão de acesso ao cliente
+        if not request.user.client_members.filter(client=establishment.client).exists():
+            return Response(
+                {"error": "You don't have permission to update this establishment"},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        serializer = UpdateEstablishmentAddressSerializer(data=request.data)
+        if serializer.is_valid():
+            content_type = ContentType.objects.get_for_model(Establishments)
+            address, created = Address.objects.get_or_create(
+                content_type=content_type,
+                object_id=establishment.id,
+                defaults=serializer.validated_data
+            )
+            
+            if not created:
+                for attr, value in serializer.validated_data.items():
+                    setattr(address, attr, value)
+                address.save()
+            
+            return Response(
+                {"message": "Address updated successfully"},
+                status=status.HTTP_200_OK
+            )
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UpdateEstablishmentWithAddressView(generics.UpdateAPIView):
+    """
+    View para atualizar dados do estabelecimento e endereço
+    """
+    serializer_class = UpdateEstablishmentWithAddressSerializer
+    permission_classes = [IsClientAdminForClient]
+    http_method_names = ['put']
+
+    def get_queryset(self):
+        # Retornar apenas establishments do cliente do usuário
+        user_clients = self.request.user.client_members.values_list('client_id', flat=True)
+        return Establishments.objects.filter(client_id__in=user_clients)
+    
+    @extend_schema(
+        summary="Update Establishment with Address",
+        description="Update the establishment's data and address",
+        request=UpdateEstablishmentWithAddressSerializer,
+        responses={
+            200: OpenApiResponse(
+                description="Establishment updated", response=EstablishmentSerializer
+            ),
+            400: OpenApiResponse(description="Validation error"),
+            404: OpenApiResponse(description="Establishment not found"),
+        },
+        tags=["Tenants - Establishments"],
+    )
+    def put(self, request, *args, **kwargs):
+        response = super().put(request, *args, **kwargs)
+        if response.status_code == 200:
+            # Retornar dados completos após update
+            establishment = self.get_object()
+            establishment_data = EstablishmentSerializer(establishment).data
+            return Response(establishment_data)
+        return response

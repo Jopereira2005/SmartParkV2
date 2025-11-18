@@ -86,19 +86,18 @@ class EstablishmentsAdmin(admin.ModelAdmin):
         "name",
         "client",
         "store_type",
-        "location_info",
+        "address_info",
         "lots_count",
         "total_slots",
         "occupied_slots",
         "created_at",
     ]
-    list_filter = ["store_type", "city", "state", "created_at", "client"]
-    search_fields = ["name", "client__name", "address", "city"]
+    list_filter = ["store_type", "created_at", "client"]
+    search_fields = ["name", "client__name"]
     inlines = [LotsInline]
 
     fieldsets = (
         ("Informações Básicas", {"fields": ("name", "client", "store_type")}),
-        ("Localização", {"fields": ("address", "city", "state", "lat", "lng")}),
         (
             "Dados de Auditoria",
             {"fields": ("created_at", "updated_at"), "classes": ("collapse",)},
@@ -120,10 +119,13 @@ class EstablishmentsAdmin(admin.ModelAdmin):
             )
         )
 
-    def location_info(self, obj):
-        return f"{obj.city}, {obj.state}"
+    def address_info(self, obj):
+        address = obj.addresses.first()
+        if address:
+            return f"{address.city}, {address.state}"
+        return "Sem endereço"
 
-    location_info.short_description = "Localização"
+    address_info.short_description = "Localização"
 
     def lots_count(self, obj):
         count = obj.lots_count if hasattr(obj, "lots_count") else obj.lots.count()

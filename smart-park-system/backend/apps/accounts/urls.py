@@ -6,8 +6,11 @@ from .views import (
     LogoutView,
     # User management views
     CreateAppUserView,
+    CreateAppUserWithAddressView,
     UserProfileView,
     UpdateUserProfileView,
+    UpdateUserAddressView,
+    UpdateUserWithAddressView,
     ChangePasswordView,
     DeactivateUserView,
     # User search views
@@ -24,11 +27,22 @@ urlpatterns = [
     path("auth/logout/", LogoutView.as_view(), name="auth_logout"),
     # ==================== USER MANAGEMENT ENDPOINTS ====================
     path("user/register/", CreateAppUserView.as_view(), name="user_register"),
+    path("user/register-with-address/", CreateAppUserWithAddressView.as_view(), name="user_register_with_address"),
     path("user/profile/", UserProfileView.as_view(), name="user_profile"),
     path(
         "user/profile/update/",
         UpdateUserProfileView.as_view(),
         name="user_profile_update",
+    ),
+    path(
+        "user/user-address/",
+        UpdateUserAddressView.as_view(),
+        name="user_address_update",
+    ),
+    path(
+        "user/profile/update-with-address/",
+        UpdateUserWithAddressView.as_view(),
+        name="user_profile_update_with_address",
     ),
     path(
         "user/profile/change-password/",

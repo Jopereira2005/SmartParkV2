@@ -1,20 +1,26 @@
-from rest_framework import generics, permissions, status
+from rest_framework import generics, permissions, status, serializers
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from django.db.models import Q
+from django.contrib.contenttypes.models import ContentType
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiResponse
+from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiResponse, OpenApiParameter
+from drf_spectacular.types import OpenApiTypes
+from apps.core.models import Address
 
 from .serializers import (
     LoginSerializer,
     CreateAppUserSerializer,
+    CreateAppUserWithAddressSerializer,
     UserProfileSerializer,
     UpdateUserSerializer,
+    UpdateUserAddressSerializer,
+    UpdateUserWithAddressSerializer,
     ChangePasswordSerializer,
     LogoutSerializer,
     UserSearchSerializer,
@@ -139,6 +145,48 @@ class CreateAppUserView(generics.CreateAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+class CreateAppUserWithAddressView(generics.CreateAPIView):
+    """
+    View para criar usuários app_user com endereço incluído
+    """
+
+    serializer_class = CreateAppUserWithAddressSerializer
+    permission_classes = [permissions.AllowAny]
+
+    @extend_schema(
+        summary="Create App User with Address",
+        description="Create a new app user with address information",
+        responses={
+            201: OpenApiResponse(
+                description="User created successfully with address", response=UserProfileSerializer
+            ),
+            400: OpenApiResponse(description="Validation error"),
+        },
+        tags=["Accounts - Users"],
+    )
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+
+            # Gerar tokens JWT para o usuário criado
+            refresh = RefreshToken.for_user(user)
+
+            return Response(
+                {
+                    "user": UserProfileSerializer(user).data,
+                    "tokens": {
+                        "access": str(refresh.access_token),
+                        "refresh": str(refresh),
+                    },
+                    "message": "User created successfully with address",
+                },
+                status=status.HTTP_201_CREATED,
+            )
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 class UserProfileView(generics.RetrieveAPIView):
     """
     View para obter perfil do usuário autenticado
@@ -248,6 +296,7 @@ class DeactivateUserView(APIView):
     @extend_schema(
         summary="Deactivate User Account",
         description="Deactivate the authenticated user's account",
+        request=None,
         responses={
             200: OpenApiResponse(description="Account deactivated successfully"),
         },
@@ -271,13 +320,13 @@ class DeactivateUserView(APIView):
         summary="Search Users",
         description="Search for users by name or email (public data only)",
         parameters=[
-            {
-                "name": "q",
-                "in": "query",
-                "description": "Search query (name, username or email)",
-                "required": False,
-                "type": "string",
-            }
+            OpenApiParameter(
+                name="q",
+                type=OpenApiTypes.STR,
+                location=OpenApiParameter.QUERY,
+                description="Search query (name, username or email)",
+                required=False,
+            )
         ],
         responses={200: UserSearchSerializer(many=True)},
         tags=["Accounts - Users"],
@@ -314,13 +363,13 @@ class UserSearchView(generics.ListAPIView):
     summary="Check Username Availability",
     description="Check if a username is available for registration",
     parameters=[
-        {
-            "name": "username",
-            "in": "query",
-            "description": "Username to check",
-            "required": True,
-            "type": "string",
-        }
+        OpenApiParameter(
+            name="username",
+            type=OpenApiTypes.STR,
+            location=OpenApiParameter.QUERY,
+            description="Username to check",
+            required=True,
+        )
     ],
     responses={
         200: OpenApiResponse(description="Username availability status"),
@@ -349,13 +398,13 @@ def check_username_availability(request):
     summary="Check Email Availability",
     description="Check if an email is available for registration",
     parameters=[
-        {
-            "name": "email",
-            "in": "query",
-            "description": "Email to check",
-            "required": True,
-            "type": "string",
-        }
+        OpenApiParameter(
+            name="email",
+            type=OpenApiTypes.STR,
+            location=OpenApiParameter.QUERY,
+            description="Email to check",
+            required=True,
+        )
     ],
     responses={
         200: OpenApiResponse(description="Email availability status"),
@@ -377,3 +426,80 @@ def check_email_availability(request):
     is_available = not User.objects.filter(email=email).exists()
 
     return Response({"email": email, "available": is_available})
+
+
+# ==================== ADDRESS MANAGEMENT VIEWS ====================
+
+
+class UpdateUserAddressView(APIView):
+    """
+    View para atualizar apenas o endereço do usuário
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    @extend_schema(
+        summary="Update User Address",
+        description="Update only the authenticated user's address",
+        request=UpdateUserAddressSerializer,
+        responses={
+            200: OpenApiResponse(description="Address updated successfully"),
+            400: OpenApiResponse(description="Validation error"),
+        },
+        tags=["Accounts - Users"],
+    )
+    def patch(self, request):
+        serializer = UpdateUserAddressSerializer(data=request.data)
+        if serializer.is_valid():
+            content_type = ContentType.objects.get_for_model(User)
+            address, created = Address.objects.get_or_create(
+                content_type=content_type,
+                object_id=request.user.id,
+                defaults=serializer.validated_data
+            )
+            
+            if not created:
+                for attr, value in serializer.validated_data.items():
+                    setattr(address, attr, value)
+                address.save()
+            
+            return Response(
+                {"message": "Address updated successfully"},
+                status=status.HTTP_200_OK
+            )
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@extend_schema_view(
+    put=extend_schema(
+        summary="Update User with Address",
+        description="Update the authenticated user's profile and address",
+        request=UpdateUserWithAddressSerializer,
+        responses={
+            200: OpenApiResponse(
+                description="User updated", response=UserProfileSerializer
+            ),
+            400: OpenApiResponse(description="Validation error"),
+        },
+        tags=["Accounts - Users"],
+    ),
+)
+class UpdateUserWithAddressView(generics.UpdateAPIView):
+    """
+    View para atualizar dados do usuário e endereço
+    """
+    serializer_class = UpdateUserWithAddressSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    http_method_names = ['put']
+
+    def get_object(self):
+        return self.request.user
+    
+    def put(self, request, *args, **kwargs):
+        response = super().put(request, *args, **kwargs)
+        if response.status_code == 200:
+            # Retornar dados completos do perfil após update
+            profile_data = UserProfileSerializer(request.user).data
+            return Response(profile_data)
+        return response
+

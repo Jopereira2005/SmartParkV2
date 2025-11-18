@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.contenttypes.fields import GenericRelation
 from apps.core.models import BaseModel, TenantModel, SoftDeleteManager, TenantManager
 
 
@@ -26,11 +27,9 @@ class Establishments(TenantModel):
         blank=True,
         related_name="establishments",
     )
-    address = models.CharField(max_length=255, null=True, blank=True)
-    city = models.CharField(max_length=100, null=True, blank=True)
-    state = models.CharField(max_length=50, null=True, blank=True)
-    lat = models.FloatField(null=True, blank=True)
-    lng = models.FloatField(null=True, blank=True)
+    
+    # Generic relation to Address
+    addresses = GenericRelation('core.Address', related_query_name='establishment')
 
     objects = TenantManager()
 

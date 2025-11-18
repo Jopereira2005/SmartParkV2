@@ -9,7 +9,10 @@ urlpatterns = [
     
     # Estabelecimentos
     path('establishments/', views.EstablishmentListCreateView.as_view(), name='establishment-list'),
+    path('establishments/create-with-address/', views.EstablishmentCreateWithAddressView.as_view(), name='establishment-create-with-address'),
     path('establishments/<int:pk>/', views.EstablishmentDetailView.as_view(), name='establishment-detail'),
+    path('establishments/<int:pk>/establishment-address/', views.UpdateEstablishmentAddressView.as_view(), name='establishment-address-update'),
+    path('establishments/<int:pk>/update-with-address/', views.UpdateEstablishmentWithAddressView.as_view(), name='establishment-update-with-address'),
     
     # Lotes
     path('lots/', views.LotListCreateView.as_view(), name='lot-list'),

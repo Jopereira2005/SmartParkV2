@@ -1,5 +1,7 @@
 from rest_framework import serializers
 from typing import Dict, Any, Optional
+from django.contrib.contenttypes.models import ContentType
+from drf_spectacular.utils import extend_schema_field
 from .models import (
     StoreTypes,
     Establishments,
@@ -14,7 +16,9 @@ from apps.core.serializers import (
     BaseModelSerializer,
     TenantModelSerializer,
     SoftDeleteSerializerMixin,
+    AddressSerializer,
 )
+from apps.core.models import Address
 
 
 class StoreTypeSerializer(BaseModelSerializer, SoftDeleteSerializerMixin):
@@ -26,6 +30,34 @@ class StoreTypeSerializer(BaseModelSerializer, SoftDeleteSerializerMixin):
 class EstablishmentSerializer(TenantModelSerializer, SoftDeleteSerializerMixin):
     store_type = StoreTypeSerializer(read_only=True)
     store_type_id = serializers.IntegerField(write_only=True, required=False)
+    address_detail = serializers.SerializerMethodField()
+
+    class Meta(TenantModelSerializer.Meta):
+        model = Establishments
+        fields = TenantModelSerializer.Meta.fields + [
+            "name",
+            "store_type",
+            "store_type_id",
+            "address_detail",
+        ]
+    
+    @extend_schema_field(AddressSerializer(allow_null=True))
+    def get_address_detail(self, obj) -> dict | None:
+        """Retorna o primeiro endereço do estabelecimento"""
+        address = obj.addresses.first()
+        if address:
+            return AddressSerializer(address).data
+        return None
+
+
+class CreateEstablishmentWithAddressSerializer(TenantModelSerializer, SoftDeleteSerializerMixin):
+    """
+    Serializer para criar estabelecimento com endereço incluído
+    """
+    
+    store_type = StoreTypeSerializer(read_only=True)
+    store_type_id = serializers.IntegerField(write_only=True, required=False)
+    address = AddressSerializer(write_only=True, required=False)
 
     class Meta(TenantModelSerializer.Meta):
         model = Establishments
@@ -34,11 +66,24 @@ class EstablishmentSerializer(TenantModelSerializer, SoftDeleteSerializerMixin):
             "store_type",
             "store_type_id",
             "address",
-            "city",
-            "state",
-            "lat",
-            "lng",
         ]
+
+    def create(self, validated_data):
+        address_data = validated_data.pop("address", None)
+        
+        # Criar o estabelecimento
+        establishment = super().create(validated_data)
+        
+        # Criar endereço se fornecido
+        if address_data:
+            content_type = ContentType.objects.get_for_model(Establishments)
+            Address.objects.create(
+                content_type=content_type,
+                object_id=establishment.id,
+                **address_data
+            )
+        
+        return establishment
 
 
 class LotSerializer(TenantModelSerializer, SoftDeleteSerializerMixin):
@@ -158,3 +203,57 @@ class SlotStatusUpdateSerializer(serializers.Serializer):
             except VehicleTypes.DoesNotExist:
                 raise serializers.ValidationError("Tipo de veículo não encontrado")
         return value
+
+
+class UpdateEstablishmentAddressSerializer(serializers.Serializer):
+    """
+    Serializer para atualizar apenas o endereço do estabelecimento
+    """
+    street = serializers.CharField(max_length=255)
+    number = serializers.CharField(max_length=20)
+    complement = serializers.CharField(max_length=100, required=False, allow_blank=True)
+    neighborhood = serializers.CharField(max_length=100)
+    city = serializers.CharField(max_length=100)
+    state = serializers.CharField(max_length=2)
+    postal_code = serializers.CharField(max_length=10)
+    country = serializers.CharField(max_length=50, default="Brasil")
+
+
+class UpdateEstablishmentWithAddressSerializer(TenantModelSerializer):
+    """
+    Serializer para atualizar dados do estabelecimento e endereço
+    """
+    address = UpdateEstablishmentAddressSerializer(required=False)
+    store_type_id = serializers.IntegerField(required=False)
+
+    class Meta(TenantModelSerializer.Meta):
+        model = Establishments
+        fields = TenantModelSerializer.Meta.fields + [
+            "name",
+            "store_type_id",
+            "address",
+        ]
+        read_only_fields = ['client', 'client_name']
+    
+    def update(self, instance, validated_data):
+        address_data = validated_data.pop('address', None)
+        
+        # Atualizar dados do estabelecimento
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+        
+        # Atualizar ou criar endereço
+        if address_data:
+            content_type = ContentType.objects.get_for_model(Establishments)
+            address, created = Address.objects.get_or_create(
+                content_type=content_type,
+                object_id=instance.id,
+                defaults=address_data
+            )
+            if not created:
+                for attr, value in address_data.items():
+                    setattr(address, attr, value)
+                address.save()
+        
+        return instance
