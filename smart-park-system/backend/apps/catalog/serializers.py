@@ -11,6 +11,7 @@ from .models import (
     VehicleTypes,
     SlotStatus,
     SlotStatusHistory,
+    UserFavorites,
 )
 from apps.core.serializers import (
     BaseModelSerializer,
@@ -386,3 +387,48 @@ class PublicAllEstablishmentsLotsResponseSerializer(serializers.Serializer):
                 ]
             }
         }
+
+
+# ==================== USER FAVORITES SERIALIZERS ====================
+
+class UserFavoriteSerializer(BaseModelSerializer):
+    """
+    Serializer para gerenciar favoritos do usuário
+    """
+    establishment = EstablishmentSerializer(read_only=True)
+    establishment_id = serializers.IntegerField(write_only=True)
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+
+    class Meta(BaseModelSerializer.Meta):
+        model = UserFavorites
+        fields = BaseModelSerializer.Meta.fields + [
+            "user",
+            "establishment",
+            "establishment_id",
+        ]
+
+    def validate(self, data):
+        """
+        Validar se o favorito já existe
+        """
+        user = data['user']
+        establishment_id = data['establishment_id']
+        
+        # Verificar se já existe
+        if UserFavorites.objects.filter(user=user, establishment_id=establishment_id).exists():
+            raise serializers.ValidationError({
+                "establishment_id": "Este estabelecimento já está nos seus favoritos."
+            })
+        
+        return data
+
+
+class FavoriteEstablishmentSerializer(BaseModelSerializer):
+    """
+    Serializer simplificado para listar estabelecimentos favoritos
+    """
+    establishment = EstablishmentSerializer(read_only=True)
+    
+    class Meta(BaseModelSerializer.Meta):
+        model = UserFavorites
+        fields = ["id", "establishment", "created_at"]

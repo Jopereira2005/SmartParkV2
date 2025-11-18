@@ -6,7 +6,7 @@ from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.db.models import Q
 from django.contrib.contenttypes.models import ContentType
-from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiResponse, OpenApiParameter
+from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiResponse, OpenApiParameter, OpenApiExample
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.openapi import OpenApiExample
 from apps.core.models import Address
@@ -20,6 +20,7 @@ from .models import (
     VehicleTypes,
     SlotStatus,
     SlotStatusHistory,
+    UserFavorites,
 )
 from .serializers import (
     StoreTypeSerializer,
@@ -36,6 +37,8 @@ from .serializers import (
     SlotStatusUpdateSerializer,
     PublicEstablishmentLotsResponseSerializer,
     PublicAllEstablishmentsLotsResponseSerializer,
+    UserFavoriteSerializer,
+    FavoriteEstablishmentSerializer,
 )
 from apps.core.permissions import IsClientAdminForClient, IsClientMember
 from apps.core.views import (
@@ -105,7 +108,23 @@ class StoreTypeListView(
 @extend_schema_view(
     get=extend_schema(
         summary="List establishments",
-        description="Retrieve paginated list of establishments for client",
+        description="Retrieve paginated list of establishments for client. Use 'favorites_only=true' to filter only favorite establishments.",
+        parameters=[
+            OpenApiParameter(
+                name="favorites_only",
+                type=OpenApiTypes.BOOL,
+                location=OpenApiParameter.QUERY,
+                description="Filter to show only favorite establishments (true/false)",
+                required=False
+            ),
+            OpenApiParameter(
+                name="search",
+                type=OpenApiTypes.STR,
+                location=OpenApiParameter.QUERY,
+                description="Search term to filter establishments by name",
+                required=False
+            ),
+        ],
         tags=["Tenants - Establishments"],
     ),
     post=extend_schema(
@@ -122,9 +141,20 @@ class EstablishmentListCreateView(
     search_fields = ["name"]
 
     def get_queryset(self):
-        """Override to ensure SearchMixin is called"""
+        """Override to add favorites filter and SearchMixin"""
         queryset = super().get_queryset()
-        return apply_search_filter(self, queryset)
+        queryset = apply_search_filter(self, queryset)
+        
+        # Filtro de favoritos
+        favorites_only = self.request.query_params.get('favorites_only', '').lower()
+        if favorites_only in ('true', '1', 'yes'):
+            # Filtrar apenas estabelecimentos favoritos do usuário
+            user_favorites = UserFavorites.objects.filter(
+                user=self.request.user
+            ).values_list('establishment_id', flat=True)
+            queryset = queryset.filter(id__in=user_favorites)
+        
+        return queryset
 
 
 @extend_schema_view(
@@ -867,3 +897,166 @@ def public_all_establishments_lots_view(request):
         response_data["previous"] = prev_url
     
     return Response(response_data, status=status.HTTP_200_OK)
+
+
+# ==================== USER FAVORITES VIEWS ====================
+
+@extend_schema_view(
+    get=extend_schema(
+        summary="List user favorites",
+        description="Get all favorite establishments for the authenticated user",
+        tags=["Catalog - User Favorites"],
+    ),
+    post=extend_schema(
+        summary="Add establishment to favorites", 
+        description="Add an establishment to user's favorites list",
+        tags=["Catalog - User Favorites"],
+    ),
+)
+class UserFavoriteListCreateView(SearchMixin, PaginationMixin, generics.ListCreateAPIView):
+    serializer_class = UserFavoriteSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get_queryset(self):
+        """Retorna apenas os favoritos do usuário autenticado"""
+        # Prevent swagger fake view errors
+        if getattr(self, 'swagger_fake_view', False):
+            return UserFavorites.objects.none()
+            
+        return UserFavorites.objects.filter(user=self.request.user).select_related(
+            'establishment', 'establishment__store_type'
+        ).prefetch_related('establishment__addresses')
+    
+    def get_serializer_class(self):
+        """Use different serializer for listing"""
+        if self.request.method == 'GET':
+            return FavoriteEstablishmentSerializer
+        return UserFavoriteSerializer
+
+
+@extend_schema_view(
+    delete=extend_schema(
+        summary="Remove establishment from favorites",
+        description="Remove an establishment from user's favorites list",
+        tags=["Catalog - User Favorites"],
+        responses={
+            204: OpenApiResponse(description="Establishment removed from favorites"),
+            404: OpenApiResponse(description="Favorite not found"),
+        },
+    ),
+)
+class UserFavoriteDestroyView(generics.DestroyAPIView):
+    serializer_class = UserFavoriteSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get_queryset(self):
+        """Retorna apenas os favoritos do usuário autenticado"""
+        # Prevent swagger fake view errors
+        if getattr(self, 'swagger_fake_view', False):
+            return UserFavorites.objects.none()
+            
+        return UserFavorites.objects.filter(user=self.request.user)
+
+
+@extend_schema(
+    operation_id="toggle_user_favorite_establishment",
+    summary="Toggle establishment favorite status",
+    description="Add or remove establishment from favorites. If already favorited, removes it. If not favorited, adds it.",
+    request=None,  # No request body needed
+    parameters=[
+        OpenApiParameter(
+            name="establishment_id",
+            type=OpenApiTypes.INT,
+            location=OpenApiParameter.PATH,
+            description="ID of the establishment to toggle",
+            required=True
+        )
+    ],
+    responses={
+        201: OpenApiResponse(
+            description="Establishment added to favorites",
+            response=UserFavoriteSerializer,
+            examples=[
+                OpenApiExample(
+                    name="Added to favorites",
+                    value={
+                        "id": 1,
+                        "establishment": {
+                            "id": 1,
+                            "name": "Shopping Center",
+                            "store_type": {
+                                "id": 1,
+                                "name": "Shopping"
+                            },
+                            "address_detail": {
+                                "street": "Rua das Flores",
+                                "number": "123",
+                                "city": "São Paulo"
+                            }
+                        },
+                        "created_at": "2025-11-18T20:25:00Z"
+                    }
+                )
+            ]
+        ),
+        204: OpenApiResponse(
+            description="Establishment removed from favorites",
+            examples=[
+                OpenApiExample(
+                    name="Removed from favorites",
+                    value={"message": "Estabelecimento removido dos favoritos"}
+                )
+            ]
+        ),
+        404: OpenApiResponse(description="Establishment not found"),
+    },
+    tags=["Catalog - User Favorites"],
+)
+@api_view(["POST"])
+@permission_classes([permissions.IsAuthenticated])
+def toggle_favorite_view(request, establishment_id):
+    """
+    Toggle do status de favorito de um estabelecimento
+    
+    Se o estabelecimento já estiver nos favoritos, remove.
+    Se não estiver, adiciona aos favoritos.
+    
+    Retorna:
+    - 201: Estabelecimento adicionado aos favoritos
+    - 204: Estabelecimento removido dos favoritos  
+    - 404: Estabelecimento não encontrado
+    """
+    try:
+        # Verificar se o estabelecimento existe
+        establishment = Establishments.objects.get(id=establishment_id)
+        
+        # Verificar se já está nos favoritos
+        favorite = UserFavorites.objects.filter(
+            user=request.user,
+            establishment=establishment
+        ).first()
+        
+        if favorite:
+            # Se já está nos favoritos, remove
+            favorite.delete()
+            return Response(
+                {"message": "Estabelecimento removido dos favoritos"},
+                status=status.HTTP_204_NO_CONTENT
+            )
+        else:
+            # Se não está nos favoritos, adiciona
+            favorite = UserFavorites.objects.create(
+                user=request.user,
+                establishment=establishment
+            )
+            serializer = UserFavoriteSerializer(favorite)
+            return Response(
+                serializer.data,
+                status=status.HTTP_201_CREATED
+            )
+            
+    except Establishments.DoesNotExist:
+        return Response(
+            {"error": "Establishment not found"},
+            status=status.HTTP_404_NOT_FOUND
+        )

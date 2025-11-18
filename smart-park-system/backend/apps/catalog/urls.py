@@ -32,6 +32,11 @@ urlpatterns = [
     path('slot-status/<int:pk>/', views.SlotStatusDetailView.as_view(), name='slot-status-detail'),
     path('slots/<int:slot_id>/history/', views.SlotStatusHistoryListView.as_view(), name='slot-status-history'),
     
+    # User Favorites
+    path('favorites/', views.UserFavoriteListCreateView.as_view(), name='user-favorites'),
+    path('favorites/<int:pk>/', views.UserFavoriteDestroyView.as_view(), name='user-favorite-delete'),
+    path('favorites/toggle/<int:establishment_id>/', views.toggle_favorite_view, name='toggle-favorite'),
+    
     # Endpoints públicos
     path('public/establishments/', views.public_establishments_view, name='public-establishments'),
     path('public/establishments/<int:establishment_id>/slots/', views.public_slot_status_view, name='public-slot-status'),

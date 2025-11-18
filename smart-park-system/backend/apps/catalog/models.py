@@ -241,3 +241,41 @@ class SlotStatusHistory(BaseModel):
 
     def __str__(self):
         return f"{self.slot.slot_code} - {self.status} ({self.recorded_at})"
+
+
+class UserFavorites(BaseModel):
+    """
+    Modelo para gerenciar estabelecimentos favoritos dos usuários
+    """
+    user = models.ForeignKey(
+        "auth.User",
+        on_delete=models.CASCADE,
+        db_column="user_id",
+        related_name="favorites",
+    )
+    establishment = models.ForeignKey(
+        "Establishments",
+        on_delete=models.CASCADE,
+        db_column="establishment_id",
+        related_name="favorited_by",
+    )
+    
+    objects = SoftDeleteManager()
+
+    class Meta:
+        db_table = "user_favorites"
+        verbose_name = "Favorito do Usuário"
+        verbose_name_plural = "Favoritos dos Usuários"
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user", "establishment"], 
+                name="uq_user_favorites_user_establishment"
+            ),
+        ]
+        indexes = [
+            models.Index(fields=["user"], name="ix_uf_user"),
+            models.Index(fields=["establishment"], name="ix_uf_establishment"),
+        ]
+
+    def __str__(self):
+        return f"{self.user.email} - {self.establishment.name}"
