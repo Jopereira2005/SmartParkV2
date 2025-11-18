@@ -33,8 +33,8 @@ class Command(BaseCommand):
         username = options["username"]
         email = options["email"]
         password = options.get("password")
-        first_name = options.get("first_name", "")
-        last_name = options.get("last_name", "")
+        first_name = options.get("first_name") or "Admin"
+        last_name = options.get("last_name") or "User"
 
         # Verificar se usuário já existe
         if User.objects.filter(username=username).exists():
