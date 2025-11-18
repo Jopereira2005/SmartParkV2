@@ -35,6 +35,7 @@ from .serializers import (
     SlotStatusHistorySerializer,
     SlotStatusUpdateSerializer,
     PublicEstablishmentLotsResponseSerializer,
+    PublicAllEstablishmentsLotsResponseSerializer,
 )
 from apps.core.permissions import IsClientAdminForClient, IsClientMember
 from apps.core.views import (
@@ -624,6 +625,7 @@ class UpdateEstablishmentWithAddressView(generics.UpdateAPIView):
 # ==================== PUBLIC ENDPOINTS ====================
 
 @extend_schema(
+    operation_id="get_public_establishment_lots",
     summary="Get establishment lots and slots (hierarchical)",
     description="Get lots and slots for a specific establishment organized in hierarchical structure",
     parameters=[
@@ -716,3 +718,152 @@ def public_establishment_lots_view(request, establishment_id):
             {"error": "Establishment not found"},
             status=status.HTTP_404_NOT_FOUND
         )
+
+
+@extend_schema(
+    operation_id="get_all_public_establishments_lots",
+    summary="Get all establishments with lots and slots (paginated)",
+    description="Get lots and slots for all establishments organized in hierarchical structure with pagination support",
+    parameters=[
+        OpenApiParameter(
+            name="page",
+            type=OpenApiTypes.INT,
+            location=OpenApiParameter.QUERY,
+            description="Page number for pagination",
+            required=False
+        ),
+        OpenApiParameter(
+            name="page_size",
+            type=OpenApiTypes.INT,
+            location=OpenApiParameter.QUERY,
+            description="Number of establishments per page (default: 10, max: 100)",
+            required=False
+        )
+    ],
+    responses={
+        200: OpenApiResponse(
+            description="Paginated list of all establishments with their lots and slots",
+            response=PublicAllEstablishmentsLotsResponseSerializer
+        ),
+    },
+    tags=["Catalog - Public"],
+)
+@api_view(["GET"])
+@permission_classes([permissions.AllowAny])
+def public_all_establishments_lots_view(request):
+    """
+    Endpoint público para obter estrutura hierárquica de lotes e vagas de todos os estabelecimentos
+    
+    Suporte à paginação via parâmetros de query:
+    - page: Número da página
+    - page_size: Itens por página (padrão: 10, máximo: 100)
+    
+    Retorna:
+    {
+        "count": 25,
+        "next": "http://api.example.com/catalog/public/establishments/lots/?page=2",
+        "previous": null,
+        "results": [
+            {
+                "establishment_id": 1,
+                "establishment_name": "Shopping Center",
+                "lots": {
+                    "lot_code": {
+                        "lot_name": "Nome do Lote",
+                        "slots": {
+                            "slot_code": {
+                                "slot_type": "Tipo da Vaga",
+                                "status": "Status da Vaga"
+                            }
+                        }
+                    }
+                }
+            }
+        ]
+    }
+    """
+    from django.core.paginator import Paginator
+    from django.http import Http404
+    
+    # Buscar todos os estabelecimentos com relacionamentos
+    establishments = Establishments.objects.prefetch_related(
+        'lots__slots__slot_type',
+        'lots__slots__current_status'
+    ).order_by('id')
+    
+    # Configurar paginação
+    page_size = min(int(request.GET.get('page_size', 10)), 100)  # Max 100 por página
+    page_number = request.GET.get('page', 1)
+    
+    paginator = Paginator(establishments, page_size)
+    
+    try:
+        page_obj = paginator.page(page_number)
+    except:
+        return Response(
+            {"error": "Invalid page number"},
+            status=status.HTTP_404_NOT_FOUND
+        )
+    
+    # Construir resultados para a página atual
+    results = []
+    for establishment in page_obj:
+        # Construir estrutura hierárquica para cada estabelecimento
+        establishment_data = {
+            "establishment_id": establishment.id,
+            "establishment_name": establishment.name,
+            "lots": {}
+        }
+        
+        # Processar cada lote do estabelecimento
+        for lot in establishment.lots.all():
+            lot_data = {
+                "lot_name": lot.name or f"Lote {lot.lot_code}",
+                "slots": {}
+            }
+            
+            # Processar cada vaga do lote
+            for slot in lot.slots.filter(active=True):
+                # Obter status atual da vaga
+                try:
+                    current_status = slot.current_status.get()
+                    status_value = current_status.status
+                except SlotStatus.DoesNotExist:
+                    status_value = "UNKNOWN"
+                
+                # Dados da vaga
+                slot_data = {
+                    "slot_type": slot.slot_type.name,
+                    "status": status_value
+                }
+                
+                lot_data["slots"][slot.slot_code] = slot_data
+            
+            establishment_data["lots"][lot.lot_code] = lot_data
+        
+        results.append(establishment_data)
+    
+    # Construir resposta paginada
+    response_data = {
+        "count": paginator.count,
+        "next": None,
+        "previous": None,
+        "results": results
+    }
+    
+    # URLs para navegação
+    if page_obj.has_next():
+        next_url = request.build_absolute_uri()
+        next_url = next_url.split('?')[0] + f"?page={page_obj.next_page_number()}"
+        if page_size != 10:
+            next_url += f"&page_size={page_size}"
+        response_data["next"] = next_url
+    
+    if page_obj.has_previous():
+        prev_url = request.build_absolute_uri()
+        prev_url = prev_url.split('?')[0] + f"?page={page_obj.previous_page_number()}"
+        if page_size != 10:
+            prev_url += f"&page_size={page_size}"
+        response_data["previous"] = prev_url
+    
+    return Response(response_data, status=status.HTTP_200_OK)

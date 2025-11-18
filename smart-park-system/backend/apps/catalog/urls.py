@@ -36,4 +36,5 @@ urlpatterns = [
     path('public/establishments/', views.public_establishments_view, name='public-establishments'),
     path('public/establishments/<int:establishment_id>/slots/', views.public_slot_status_view, name='public-slot-status'),
     path('public/establishments/<int:establishment_id>/lots/', views.public_establishment_lots_view, name='public-establishment-lots'),
+    path('public/establishments/lots/', views.public_all_establishments_lots_view, name='public-all-establishments-lots'),
 ]

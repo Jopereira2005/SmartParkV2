@@ -89,6 +89,7 @@ class CreateEstablishmentWithAddressSerializer(TenantModelSerializer, SoftDelete
 class LotSerializer(TenantModelSerializer, SoftDeleteSerializerMixin):
     establishment = EstablishmentSerializer(read_only=True)
     establishment_id = serializers.IntegerField(write_only=True)
+    client = serializers.SerializerMethodField()
 
     class Meta(TenantModelSerializer.Meta):
         model = Lots
@@ -97,7 +98,13 @@ class LotSerializer(TenantModelSerializer, SoftDeleteSerializerMixin):
             "establishment_id",
             "lot_code",
             "name",
+            "client",
         ]
+    
+    @extend_schema_field(serializers.CharField())
+    def get_client(self, obj) -> str:
+        """Retorna o nome do cliente através do establishment"""
+        return obj.client.name if obj.client else None
 
 
 class SlotTypeSerializer(BaseModelSerializer, SoftDeleteSerializerMixin):
@@ -118,6 +125,7 @@ class SlotSerializer(TenantModelSerializer, SoftDeleteSerializerMixin):
     slot_type = SlotTypeSerializer(read_only=True)
     slot_type_id = serializers.IntegerField(write_only=True)
     current_status = serializers.SerializerMethodField()
+    client = serializers.SerializerMethodField()
 
     class Meta(TenantModelSerializer.Meta):
         model = Slots
@@ -130,7 +138,13 @@ class SlotSerializer(TenantModelSerializer, SoftDeleteSerializerMixin):
             "polygon_json",
             "active",
             "current_status",
+            "client",
         ]
+    
+    @extend_schema_field(serializers.CharField())
+    def get_client(self, obj) -> str:
+        """Retorna o nome do cliente através do lot.establishment"""
+        return obj.client.name if obj.client else None
 
     def get_current_status(self, obj: Slots) -> Optional[Dict[str, Any]]:
         try:
@@ -314,5 +328,61 @@ class PublicEstablishmentLotsResponseSerializer(serializers.Serializer):
                         }
                     }
                 }
+            }
+        }
+
+
+class PublicAllEstablishmentsLotsResponseSerializer(serializers.Serializer):
+    """Serializer para resposta paginada de todos os estabelecimentos com lotes e vagas"""
+    count = serializers.IntegerField(help_text="Total de estabelecimentos")
+    next = serializers.URLField(allow_null=True, help_text="URL da próxima página")
+    previous = serializers.URLField(allow_null=True, help_text="URL da página anterior")
+    results = serializers.ListField(
+        child=PublicEstablishmentLotsResponseSerializer(),
+        help_text="Lista de estabelecimentos com suas vagas organizadas hierarquicamente"
+    )
+    
+    class Meta:
+        examples = {
+            "paginated_response": {
+                "count": 25,
+                "next": "http://api.example.com/catalog/public/establishments/lots/?page=2",
+                "previous": None,
+                "results": [
+                    {
+                        "establishment_id": 1,
+                        "establishment_name": "Shopping Center Plaza",
+                        "lots": {
+                            "A1": {
+                                "lot_name": "Lote A1",
+                                "slots": {
+                                    "A1-001": {
+                                        "slot_type": "Carro",
+                                        "status": "FREE"
+                                    },
+                                    "A1-002": {
+                                        "slot_type": "Moto",
+                                        "status": "OCCUPIED"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "establishment_id": 2,
+                        "establishment_name": "Estacionamento Centro",
+                        "lots": {
+                            "B1": {
+                                "lot_name": "Lote Principal",
+                                "slots": {
+                                    "B1-001": {
+                                        "slot_type": "Carro",
+                                        "status": "RESERVED"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                ]
             }
         }
