@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import Link from 'next/link';
-
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import styled from "../style.module.scss";
@@ -13,8 +13,11 @@ import { FacebookIcon } from "@/assets/Auth/Facebook";
 import { GoogleIcon } from "@/assets/Auth/Google";
 import { TwitterIcon } from "@/assets/Auth/Twitter";
 
+import { login } from "@/lib/auth/login";
+
 export default function LoginPage() {
-  // const { login } = useAuth();
+  const router = useRouter();
+  
   const [credentials, setCredentials] = useState({ username: '', password: '' });
 
   const [alertProps, setAlertProps] = useState({ message: '', timeDuration: 0, type: 'success' as 'success' | 'error'});
@@ -22,38 +25,34 @@ export default function LoginPage() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    try {
+      const response: any = await login(credentials);
+      console.log(response);
 
-    setAlertProps({
+      if(!response.ok) 
+        throw response
+
+      setAlertProps({
         message: "Login efetuado com sucesso.",
-        timeDuration: 3000,
+        timeDuration: 2000,
         type: 'success'     
       });
-    setAlertOpen(true);
-    
-    // try {
-    //   const response: any = await login(credentials);
-    //   if(response.statusCode)  
-    //    throw response
+      setAlertOpen(true);
+
+      setTimeout(() => {
+        router.replace("/");
+      }, 2500)
        
-    //   setAlertProps({
-    //     message: "Login efetuado com sucesso.",
-    //     timeDuration: 3000,
-    //     type: 'success'     
-    //   });
-    //   setAlertOpen(true);
 
-    //   setTimeout(() => {
-    //     navigate("/");
-    //   }, 3500)
-
-    // } catch(err: any){ 
-    //   setAlertProps({
-    //     message: err.error ? err.error : "Erro ao tentar entrar",
-    //     timeDuration: 3000,
-    //     type: 'error'     
-    //   });
-    //   setAlertOpen(true);
-    // }
+    } catch(err: any){ 
+      setAlertProps({
+        message: err.message,
+        timeDuration: 2000,
+        type: 'error'     
+      });
+      setAlertOpen(true);
+    }
   };
 
   return (

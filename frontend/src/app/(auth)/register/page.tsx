@@ -1,62 +1,59 @@
 "use client";
 import Image from "next/image";
 import Link from 'next/link'
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import styled from "../style.module.scss";
 
 import Input from '@/components/Auth/Input';
+import AlertNotification from "@/components/Common/AlertNotification";
 
 import { FacebookIcon } from "@/assets/Auth/Facebook";
 import { GoogleIcon } from "@/assets/Auth/Google";
 import { TwitterIcon } from "@/assets/Auth/Twitter";
 
+import { register } from "@/lib/auth/register";
+
 export default function RegisterPage() {
-  // const { login } = useAuth();
-  const [firstname, setFirstname] = useState('');
-  const [lastname, setLastname] = useState('');
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const router = useRouter();
+  const [credentials, setCredentials] = useState({ username: '', email: '', first_name: '', last_name: '',  password: '', password_confirm: '' });
 
   const [alertProps, setAlertProps] = useState({ message: '', timeDuration: 0, type: 'success' as 'success' | 'error' });
   const [alertOpen, setAlertOpen] = useState(false)
 
-  // const navigate = useNavigate();
-
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // try {
-    //   const response = await userService.register(name, username, email, password);
-    //   if (response.statusCode >= 400) {
-    //     throw response;
-    //   }
+    try {
+      const response = await register(credentials);
+
+      if (!response.ok) {
+        throw response;
+      }
       
-    //   setEmail('');
-    //   setPassword('');
-    //   setName('');
-    //   setUsername('');
+      setCredentials({ username: '', email: '', first_name: '', last_name: '',  password: '', password_confirm: '' });
 
-    //   setAlertProps({
-    //     message: "Usuario cadastrado com sucesso",
-    //     timeDuration: 3000,
-    //     type: "success"
-    //   })
+      setAlertProps({
+        message: "Usuario cadastrado com sucesso",
+        timeDuration: 2000,
+        type: "success"
+      })
 
-    //   setTimeout(() => {
-    //     navigate("/login");
-    //   }, 3500)
+      setTimeout(() => {
+        router.replace("/");
+      }, 2500)
 
-    //   setAlertOpen(true);
-    // } catch (err: any) {
-    //   setAlertProps({
-    //     message: err.content ? String(err.content) : "Erro ao logar",
-    //     timeDuration: 3000,
-    //     type: "error"
-    //   })
-    //   setAlertOpen(true);
-    // }
+      setAlertOpen(true);
+    } catch (err: any) {
+      console.log(err);
+      setAlertProps({
+        message: err.message[0],
+        timeDuration: 3000,
+        type: "error"
+      })
+      setAlertOpen(true);
+    }
   };
 
   return (
@@ -85,42 +82,50 @@ export default function RegisterPage() {
                 <div className={ styled.main__auth__form__inputs }>
                   <Input
                     type="text"
-                    name="firstname"
+                    name="first_name"
                     label="Nome"
-                    value={ firstname }
-                    onChangeFunc={ (e: React.ChangeEvent<HTMLInputElement>) => setFirstname(e.target.value) }
+                    value={ credentials.first_name }
+                    onChangeFunc={ (e: React.ChangeEvent<HTMLInputElement>) => setCredentials({ ...credentials, first_name: e.target.value }) }
                   />
 
                   <Input
                     type="text"
-                    name="lastname"
+                    name="last_name"
                     label="Sobrenome"
-                    value={ lastname }
-                    onChangeFunc={ (e: React.ChangeEvent<HTMLInputElement>) => setLastname(e.target.value) }
+                    value={ credentials.last_name }
+                    onChangeFunc={ (e: React.ChangeEvent<HTMLInputElement>) => setCredentials({ ...credentials, last_name: e.target.value }) }
                   />
 
                   <Input
                     type="text"
                     name="username"
                     label="Nome de usuário"
-                    value={ username }
-                    onChangeFunc={ (e: React.ChangeEvent<HTMLInputElement>) => setUsername(e.target.value) }
+                    value={ credentials.username }
+                    onChangeFunc={ (e: React.ChangeEvent<HTMLInputElement>) => setCredentials({ ...credentials, username: e.target.value }) }
                   />
 
                   <Input
                     type="email"
                     name="email"
                     label="Email"
-                    value={ email }
-                    onChangeFunc={ (e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value) }
+                    value={ credentials.email }
+                    onChangeFunc={ (e: React.ChangeEvent<HTMLInputElement>) => setCredentials({ ...credentials, email: e.target.value }) }
                   />
 
                   <Input
                     type="password"
                     name="password"
                     label="Senha"
-                    value={ password }
-                    onChangeFunc={ (e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value) }
+                    value={ credentials.password }
+                    onChangeFunc={ (e: React.ChangeEvent<HTMLInputElement>) => setCredentials({ ...credentials, password: e.target.value }) }
+                  />
+
+                  <Input
+                    type="password"
+                    name="confirmPassword"
+                    label="Confirmar Senha"
+                    value={ credentials.password_confirm }
+                    onChangeFunc={ (e: React.ChangeEvent<HTMLInputElement>) => setCredentials({ ...credentials, password_confirm: e.target.value }) }
                   />
                 </div>
 
@@ -145,6 +150,11 @@ export default function RegisterPage() {
           </div>  
         </div>
       </div>
+      <AlertNotification
+        {...alertProps}
+        state={ alertOpen }
+        handleClose={() => setAlertOpen(false)}      
+      />
     </div>
   );
 }
