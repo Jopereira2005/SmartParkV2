@@ -157,6 +157,10 @@ SPECTACULAR_SETTINGS = {
             "name": "Catalog - Types",
             "description": "📓 Tipos de entidades (estabelecimentos, veículos, vagas)",
         },
+        {
+            "name": "Catalog - User Favorites",
+            "description": "⭐ Gerenciamento de estabelecimentos favoritos dos usuários",
+        },
         # ============ TENANTS APP ============
         {
             "name": "Tenants - Clients",

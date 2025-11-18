@@ -12,6 +12,7 @@ from .models import (
     VehicleTypes,
     SlotStatus,
     SlotStatusHistory,
+    UserFavorites,
 )
 
 # Importar o admin_site customizado
@@ -86,19 +87,18 @@ class EstablishmentsAdmin(admin.ModelAdmin):
         "name",
         "client",
         "store_type",
-        "location_info",
+        "address_info",
         "lots_count",
         "total_slots",
         "occupied_slots",
         "created_at",
     ]
-    list_filter = ["store_type", "city", "state", "created_at", "client"]
-    search_fields = ["name", "client__name", "address", "city"]
+    list_filter = ["store_type", "created_at", "client"]
+    search_fields = ["name", "client__name"]
     inlines = [LotsInline]
 
     fieldsets = (
         ("Informações Básicas", {"fields": ("name", "client", "store_type")}),
-        ("Localização", {"fields": ("address", "city", "state", "lat", "lng")}),
         (
             "Dados de Auditoria",
             {"fields": ("created_at", "updated_at"), "classes": ("collapse",)},
@@ -120,10 +120,13 @@ class EstablishmentsAdmin(admin.ModelAdmin):
             )
         )
 
-    def location_info(self, obj):
-        return f"{obj.city}, {obj.state}"
+    def address_info(self, obj):
+        address = obj.addresses.first()
+        if address:
+            return f"{address.city}, {address.state}"
+        return "Sem endereço"
 
-    location_info.short_description = "Localização"
+    address_info.short_description = "Localização"
 
     def lots_count(self, obj):
         count = obj.lots_count if hasattr(obj, "lots_count") else obj.lots.count()
@@ -465,3 +468,21 @@ admin_site.register(SlotTypes, SlotTypesAdmin)
 admin_site.register(VehicleTypes, VehicleTypesAdmin)
 admin_site.register(SlotStatus, SlotStatusAdmin)
 admin_site.register(SlotStatusHistory, SlotStatusHistoryAdmin)
+
+
+@admin.register(UserFavorites, site=admin_site)
+class UserFavoritesAdmin(admin.ModelAdmin):
+    list_display = ["user_email", "establishment_name", "created_at"]
+    list_filter = ["created_at", "establishment__store_type"]
+    search_fields = ["user__email", "establishment__name"]
+    readonly_fields = ["created_at", "updated_at"]
+    
+    def user_email(self, obj):
+        return obj.user.email
+    user_email.short_description = "Usuário"
+    user_email.admin_order_field = "user__email"
+    
+    def establishment_name(self, obj):
+        return obj.establishment.name
+    establishment_name.short_description = "Estabelecimento"
+    establishment_name.admin_order_field = "establishment__name"

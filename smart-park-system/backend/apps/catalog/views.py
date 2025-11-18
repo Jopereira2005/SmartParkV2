@@ -1,10 +1,15 @@
 from rest_framework import generics, status, permissions
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.db.models import Q
-from drf_spectacular.utils import extend_schema, extend_schema_view
+from django.contrib.contenttypes.models import ContentType
+from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiResponse, OpenApiParameter, OpenApiExample
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.openapi import OpenApiExample
+from apps.core.models import Address
 
 from .models import (
     StoreTypes,
@@ -15,10 +20,14 @@ from .models import (
     VehicleTypes,
     SlotStatus,
     SlotStatusHistory,
+    UserFavorites,
 )
 from .serializers import (
     StoreTypeSerializer,
     EstablishmentSerializer,
+    CreateEstablishmentWithAddressSerializer,
+    UpdateEstablishmentAddressSerializer,
+    UpdateEstablishmentWithAddressSerializer,
     LotSerializer,
     SlotSerializer,
     SlotTypeSerializer,
@@ -26,6 +35,10 @@ from .serializers import (
     SlotStatusSerializer,
     SlotStatusHistorySerializer,
     SlotStatusUpdateSerializer,
+    PublicEstablishmentLotsResponseSerializer,
+    PublicAllEstablishmentsLotsResponseSerializer,
+    UserFavoriteSerializer,
+    FavoriteEstablishmentSerializer,
 )
 from apps.core.permissions import IsClientAdminForClient, IsClientMember
 from apps.core.views import (
@@ -67,7 +80,7 @@ class StoreTypeListView(
 ):
     queryset = StoreTypes.objects.all()
     serializer_class = StoreTypeSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
     search_fields = ["name"]
 
     def get_queryset(self):
@@ -95,7 +108,23 @@ class StoreTypeListView(
 @extend_schema_view(
     get=extend_schema(
         summary="List establishments",
-        description="Retrieve paginated list of establishments for client",
+        description="Retrieve paginated list of establishments for client. Use 'favorites_only=true' to filter only favorite establishments.",
+        parameters=[
+            OpenApiParameter(
+                name="favorites_only",
+                type=OpenApiTypes.BOOL,
+                location=OpenApiParameter.QUERY,
+                description="Filter to show only favorite establishments (true/false)",
+                required=False
+            ),
+            OpenApiParameter(
+                name="search",
+                type=OpenApiTypes.STR,
+                location=OpenApiParameter.QUERY,
+                description="Search term to filter establishments by name",
+                required=False
+            ),
+        ],
         tags=["Tenants - Establishments"],
     ),
     post=extend_schema(
@@ -109,12 +138,37 @@ class EstablishmentListCreateView(
 ):
     serializer_class = EstablishmentSerializer
     permission_classes = [IsClientMember]
-    search_fields = ["name", "address", "city", "state"]
+    search_fields = ["name"]
 
     def get_queryset(self):
-        """Override to ensure SearchMixin is called"""
+        """Override to add favorites filter and SearchMixin"""
         queryset = super().get_queryset()
-        return apply_search_filter(self, queryset)
+        queryset = apply_search_filter(self, queryset)
+        
+        # Filtro de favoritos
+        favorites_only = self.request.query_params.get('favorites_only', '').lower()
+        if favorites_only in ('true', '1', 'yes'):
+            # Filtrar apenas estabelecimentos favoritos do usuário
+            user_favorites = UserFavorites.objects.filter(
+                user=self.request.user
+            ).values_list('establishment_id', flat=True)
+            queryset = queryset.filter(id__in=user_favorites)
+        
+        return queryset
+
+
+@extend_schema_view(
+    post=extend_schema(
+        summary="Create establishment with address",
+        description="Create a new establishment with address information for client",
+        tags=["Tenants - Establishments"],
+    ),
+)
+class EstablishmentCreateWithAddressView(
+    TenantViewSetMixin, generics.CreateAPIView
+):
+    serializer_class = CreateEstablishmentWithAddressSerializer
+    permission_classes = [IsClientMember]
 
 
 @extend_schema_view(
@@ -265,7 +319,7 @@ class SlotTypeListView(
 ):
     queryset = SlotTypes.objects.all()
     serializer_class = SlotTypeSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
     search_fields = ["name"]
 
     def get_queryset(self):
@@ -284,7 +338,7 @@ class VehicleTypeListView(
 ):
     queryset = VehicleTypes.objects.all()
     serializer_class = VehicleTypeSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
     search_fields = ["name"]
 
     def get_queryset(self):
@@ -508,3 +562,501 @@ def public_slot_status_view(request, establishment_id):
         )
 
     return Response(data)
+
+
+# ==================== ESTABLISHMENT ADDRESS MANAGEMENT ====================
+
+
+class UpdateEstablishmentAddressView(APIView):
+    """
+    View para atualizar apenas o endereço do estabelecimento
+    """
+    permission_classes = [IsClientAdminForClient]
+
+    @extend_schema(
+        summary="Update Establishment Address",
+        description="Update only the establishment's address",
+        request=UpdateEstablishmentAddressSerializer,
+        responses={
+            200: OpenApiResponse(description="Address updated successfully"),
+            400: OpenApiResponse(description="Validation error"),
+            404: OpenApiResponse(description="Establishment not found"),
+        },
+        tags=["Tenants - Establishments"],
+    )
+    def patch(self, request, pk):
+        establishment = get_object_or_404(Establishments, pk=pk)
+        
+        # Verificar permissão de acesso ao cliente
+        if not request.user.client_members.filter(client=establishment.client).exists():
+            return Response(
+                {"error": "You don't have permission to update this establishment"},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        serializer = UpdateEstablishmentAddressSerializer(data=request.data)
+        if serializer.is_valid():
+            content_type = ContentType.objects.get_for_model(Establishments)
+            address, created = Address.objects.get_or_create(
+                content_type=content_type,
+                object_id=establishment.id,
+                defaults=serializer.validated_data
+            )
+            
+            if not created:
+                for attr, value in serializer.validated_data.items():
+                    setattr(address, attr, value)
+                address.save()
+            
+            return Response(
+                {"message": "Address updated successfully"},
+                status=status.HTTP_200_OK
+            )
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UpdateEstablishmentWithAddressView(generics.UpdateAPIView):
+    """
+    View para atualizar dados do estabelecimento e endereço
+    """
+    serializer_class = UpdateEstablishmentWithAddressSerializer
+    permission_classes = [IsClientAdminForClient]
+    http_method_names = ['put']
+
+    def get_queryset(self):
+        # Retornar apenas establishments do cliente do usuário
+        user_clients = self.request.user.client_members.values_list('client_id', flat=True)
+        return Establishments.objects.filter(client_id__in=user_clients)
+    
+    @extend_schema(
+        summary="Update Establishment with Address",
+        description="Update the establishment's data and address",
+        request=UpdateEstablishmentWithAddressSerializer,
+        responses={
+            200: OpenApiResponse(
+                description="Establishment updated", response=EstablishmentSerializer
+            ),
+            400: OpenApiResponse(description="Validation error"),
+            404: OpenApiResponse(description="Establishment not found"),
+        },
+        tags=["Tenants - Establishments"],
+    )
+    def put(self, request, *args, **kwargs):
+        response = super().put(request, *args, **kwargs)
+        if response.status_code == 200:
+            # Retornar dados completos após update
+            establishment = self.get_object()
+            establishment_data = EstablishmentSerializer(establishment).data
+            return Response(establishment_data)
+        return response
+
+
+# ==================== PUBLIC ENDPOINTS ====================
+
+@extend_schema(
+    operation_id="get_public_establishment_lots",
+    summary="Get establishment lots and slots (hierarchical)",
+    description="Get lots and slots for a specific establishment organized in hierarchical structure",
+    parameters=[
+        OpenApiParameter(
+            name="establishment_id",
+            type=OpenApiTypes.INT,
+            location=OpenApiParameter.PATH,
+            description="ID of the establishment",
+            required=True
+        )
+    ],
+    responses={
+        200: OpenApiResponse(
+            description="Establishment lots and slots organized hierarchically",
+            response=PublicEstablishmentLotsResponseSerializer
+        ),
+        404: OpenApiResponse(description="Establishment not found"),
+    },
+    tags=["Catalog - Public"],
+)
+@api_view(["GET"])
+@permission_classes([permissions.AllowAny])
+def public_establishment_lots_view(request, establishment_id):
+    """
+    Endpoint público para obter estrutura hierárquica de lotes e vagas
+    
+    Retorna:
+    {
+        "establishment_id": 1,
+        "establishment_name": "Shopping Center",
+        "lots": {
+            "lot_code": {
+                "lot_name": "Nome do Lote",
+                "slots": {
+                    "slot_code": {
+                        "slot_type": "Tipo da Vaga",
+                        "status": "Status da Vaga"
+                    }
+                }
+            }
+        }
+    }
+    """
+    try:
+        # Buscar estabelecimento com todos os relacionamentos necessários
+        establishment = Establishments.objects.prefetch_related(
+            'lots__slots__slot_type',
+            'lots__slots__current_status'
+        ).get(id=establishment_id)
+        
+        # Construir estrutura hierárquica
+        result = {
+            "establishment_id": establishment.id,
+            "establishment_name": establishment.name,
+            "lots": {}
+        }
+        
+        # Processar cada lote
+        for lot in establishment.lots.all():
+            lot_data = {
+                "lot_name": lot.name or f"Lote {lot.lot_code}",
+                "slots": {}
+            }
+            
+            # Processar cada vaga do lote
+            for slot in lot.slots.filter(active=True):
+                # Obter status atual da vaga
+                try:
+                    current_status = slot.current_status.get()
+                    status_value = current_status.status
+                except SlotStatus.DoesNotExist:
+                    status_value = "UNKNOWN"
+                
+                # Dados da vaga
+                slot_data = {
+                    "slot_type": slot.slot_type.name,
+                    "status": status_value
+                }
+                
+                # Adicionar vaga ao lote usando slot_code como chave
+                lot_data["slots"][slot.slot_code] = slot_data
+            
+            # Adicionar lote ao resultado usando lot_code como chave
+            result["lots"][lot.lot_code] = lot_data
+        
+        return Response(result, status=status.HTTP_200_OK)
+        
+    except Establishments.DoesNotExist:
+        return Response(
+            {"error": "Establishment not found"},
+            status=status.HTTP_404_NOT_FOUND
+        )
+
+
+@extend_schema(
+    operation_id="get_all_public_establishments_lots",
+    summary="Get all establishments with lots and slots (paginated)",
+    description="Get lots and slots for all establishments organized in hierarchical structure with pagination support",
+    parameters=[
+        OpenApiParameter(
+            name="page",
+            type=OpenApiTypes.INT,
+            location=OpenApiParameter.QUERY,
+            description="Page number for pagination",
+            required=False
+        ),
+        OpenApiParameter(
+            name="page_size",
+            type=OpenApiTypes.INT,
+            location=OpenApiParameter.QUERY,
+            description="Number of establishments per page (default: 10, max: 100)",
+            required=False
+        )
+    ],
+    responses={
+        200: OpenApiResponse(
+            description="Paginated list of all establishments with their lots and slots",
+            response=PublicAllEstablishmentsLotsResponseSerializer
+        ),
+    },
+    tags=["Catalog - Public"],
+)
+@api_view(["GET"])
+@permission_classes([permissions.AllowAny])
+def public_all_establishments_lots_view(request):
+    """
+    Endpoint público para obter estrutura hierárquica de lotes e vagas de todos os estabelecimentos
+    
+    Suporte à paginação via parâmetros de query:
+    - page: Número da página
+    - page_size: Itens por página (padrão: 10, máximo: 100)
+    
+    Retorna:
+    {
+        "count": 25,
+        "next": "http://api.example.com/catalog/public/establishments/lots/?page=2",
+        "previous": null,
+        "results": [
+            {
+                "establishment_id": 1,
+                "establishment_name": "Shopping Center",
+                "lots": {
+                    "lot_code": {
+                        "lot_name": "Nome do Lote",
+                        "slots": {
+                            "slot_code": {
+                                "slot_type": "Tipo da Vaga",
+                                "status": "Status da Vaga"
+                            }
+                        }
+                    }
+                }
+            }
+        ]
+    }
+    """
+    from django.core.paginator import Paginator
+    from django.http import Http404
+    
+    # Buscar todos os estabelecimentos com relacionamentos
+    establishments = Establishments.objects.prefetch_related(
+        'lots__slots__slot_type',
+        'lots__slots__current_status'
+    ).order_by('id')
+    
+    # Configurar paginação
+    page_size = min(int(request.GET.get('page_size', 10)), 100)  # Max 100 por página
+    page_number = request.GET.get('page', 1)
+    
+    paginator = Paginator(establishments, page_size)
+    
+    try:
+        page_obj = paginator.page(page_number)
+    except:
+        return Response(
+            {"error": "Invalid page number"},
+            status=status.HTTP_404_NOT_FOUND
+        )
+    
+    # Construir resultados para a página atual
+    results = []
+    for establishment in page_obj:
+        # Construir estrutura hierárquica para cada estabelecimento
+        establishment_data = {
+            "establishment_id": establishment.id,
+            "establishment_name": establishment.name,
+            "lots": {}
+        }
+        
+        # Processar cada lote do estabelecimento
+        for lot in establishment.lots.all():
+            lot_data = {
+                "lot_name": lot.name or f"Lote {lot.lot_code}",
+                "slots": {}
+            }
+            
+            # Processar cada vaga do lote
+            for slot in lot.slots.filter(active=True):
+                # Obter status atual da vaga
+                try:
+                    current_status = slot.current_status.get()
+                    status_value = current_status.status
+                except SlotStatus.DoesNotExist:
+                    status_value = "UNKNOWN"
+                
+                # Dados da vaga
+                slot_data = {
+                    "slot_type": slot.slot_type.name,
+                    "status": status_value
+                }
+                
+                lot_data["slots"][slot.slot_code] = slot_data
+            
+            establishment_data["lots"][lot.lot_code] = lot_data
+        
+        results.append(establishment_data)
+    
+    # Construir resposta paginada
+    response_data = {
+        "count": paginator.count,
+        "next": None,
+        "previous": None,
+        "results": results
+    }
+    
+    # URLs para navegação
+    if page_obj.has_next():
+        next_url = request.build_absolute_uri()
+        next_url = next_url.split('?')[0] + f"?page={page_obj.next_page_number()}"
+        if page_size != 10:
+            next_url += f"&page_size={page_size}"
+        response_data["next"] = next_url
+    
+    if page_obj.has_previous():
+        prev_url = request.build_absolute_uri()
+        prev_url = prev_url.split('?')[0] + f"?page={page_obj.previous_page_number()}"
+        if page_size != 10:
+            prev_url += f"&page_size={page_size}"
+        response_data["previous"] = prev_url
+    
+    return Response(response_data, status=status.HTTP_200_OK)
+
+
+# ==================== USER FAVORITES VIEWS ====================
+
+@extend_schema_view(
+    get=extend_schema(
+        summary="List user favorites",
+        description="Get all favorite establishments for the authenticated user",
+        tags=["Catalog - User Favorites"],
+    ),
+    post=extend_schema(
+        summary="Add establishment to favorites", 
+        description="Add an establishment to user's favorites list",
+        tags=["Catalog - User Favorites"],
+    ),
+)
+class UserFavoriteListCreateView(SearchMixin, PaginationMixin, generics.ListCreateAPIView):
+    serializer_class = UserFavoriteSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get_queryset(self):
+        """Retorna apenas os favoritos do usuário autenticado"""
+        # Prevent swagger fake view errors
+        if getattr(self, 'swagger_fake_view', False):
+            return UserFavorites.objects.none()
+            
+        return UserFavorites.objects.filter(user=self.request.user).select_related(
+            'establishment', 'establishment__store_type'
+        ).prefetch_related('establishment__addresses')
+    
+    def get_serializer_class(self):
+        """Use different serializer for listing"""
+        if self.request.method == 'GET':
+            return FavoriteEstablishmentSerializer
+        return UserFavoriteSerializer
+
+
+@extend_schema_view(
+    delete=extend_schema(
+        summary="Remove establishment from favorites",
+        description="Remove an establishment from user's favorites list",
+        tags=["Catalog - User Favorites"],
+        responses={
+            204: OpenApiResponse(description="Establishment removed from favorites"),
+            404: OpenApiResponse(description="Favorite not found"),
+        },
+    ),
+)
+class UserFavoriteDestroyView(generics.DestroyAPIView):
+    serializer_class = UserFavoriteSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get_queryset(self):
+        """Retorna apenas os favoritos do usuário autenticado"""
+        # Prevent swagger fake view errors
+        if getattr(self, 'swagger_fake_view', False):
+            return UserFavorites.objects.none()
+            
+        return UserFavorites.objects.filter(user=self.request.user)
+
+
+@extend_schema(
+    operation_id="toggle_user_favorite_establishment",
+    summary="Toggle establishment favorite status",
+    description="Add or remove establishment from favorites. If already favorited, removes it. If not favorited, adds it.",
+    request=None,  # No request body needed
+    parameters=[
+        OpenApiParameter(
+            name="establishment_id",
+            type=OpenApiTypes.INT,
+            location=OpenApiParameter.PATH,
+            description="ID of the establishment to toggle",
+            required=True
+        )
+    ],
+    responses={
+        201: OpenApiResponse(
+            description="Establishment added to favorites",
+            response=UserFavoriteSerializer,
+            examples=[
+                OpenApiExample(
+                    name="Added to favorites",
+                    value={
+                        "id": 1,
+                        "establishment": {
+                            "id": 1,
+                            "name": "Shopping Center",
+                            "store_type": {
+                                "id": 1,
+                                "name": "Shopping"
+                            },
+                            "address_detail": {
+                                "street": "Rua das Flores",
+                                "number": "123",
+                                "city": "São Paulo"
+                            }
+                        },
+                        "created_at": "2025-11-18T20:25:00Z"
+                    }
+                )
+            ]
+        ),
+        204: OpenApiResponse(
+            description="Establishment removed from favorites",
+            examples=[
+                OpenApiExample(
+                    name="Removed from favorites",
+                    value={"message": "Estabelecimento removido dos favoritos"}
+                )
+            ]
+        ),
+        404: OpenApiResponse(description="Establishment not found"),
+    },
+    tags=["Catalog - User Favorites"],
+)
+@api_view(["POST"])
+@permission_classes([permissions.IsAuthenticated])
+def toggle_favorite_view(request, establishment_id):
+    """
+    Toggle do status de favorito de um estabelecimento
+    
+    Se o estabelecimento já estiver nos favoritos, remove.
+    Se não estiver, adiciona aos favoritos.
+    
+    Retorna:
+    - 201: Estabelecimento adicionado aos favoritos
+    - 204: Estabelecimento removido dos favoritos  
+    - 404: Estabelecimento não encontrado
+    """
+    try:
+        # Verificar se o estabelecimento existe
+        establishment = Establishments.objects.get(id=establishment_id)
+        
+        # Verificar se já está nos favoritos
+        favorite = UserFavorites.objects.filter(
+            user=request.user,
+            establishment=establishment
+        ).first()
+        
+        if favorite:
+            # Se já está nos favoritos, remove
+            favorite.delete()
+            return Response(
+                {"message": "Estabelecimento removido dos favoritos"},
+                status=status.HTTP_204_NO_CONTENT
+            )
+        else:
+            # Se não está nos favoritos, adiciona
+            favorite = UserFavorites.objects.create(
+                user=request.user,
+                establishment=establishment
+            )
+            serializer = UserFavoriteSerializer(favorite)
+            return Response(
+                serializer.data,
+                status=status.HTTP_201_CREATED
+            )
+            
+    except Establishments.DoesNotExist:
+        return Response(
+            {"error": "Establishment not found"},
+            status=status.HTTP_404_NOT_FOUND
+        )

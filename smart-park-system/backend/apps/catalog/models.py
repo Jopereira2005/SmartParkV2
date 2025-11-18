@@ -1,5 +1,22 @@
 from django.db import models
+from django.contrib.contenttypes.fields import GenericRelation
 from apps.core.models import BaseModel, TenantModel, SoftDeleteManager, TenantManager
+
+
+class LotManager(SoftDeleteManager):
+    """Manager customizado para Lots que filtra por establishment.client"""
+    def for_user(self, user):
+        """Filtra lots pelos clientes do usuário via establishment"""
+        user_clients = user.client_members.values_list('client_id', flat=True)
+        return self.filter(establishment__client_id__in=user_clients)
+
+
+class SlotManager(SoftDeleteManager):
+    """Manager customizado para Slots que filtra por lot.establishment.client"""
+    def for_user(self, user):
+        """Filtra slots pelos clientes do usuário via lot.establishment"""
+        user_clients = user.client_members.values_list('client_id', flat=True)
+        return self.filter(lot__establishment__client_id__in=user_clients)
 
 
 class StoreTypes(BaseModel):
@@ -26,11 +43,9 @@ class Establishments(TenantModel):
         blank=True,
         related_name="establishments",
     )
-    address = models.CharField(max_length=255, null=True, blank=True)
-    city = models.CharField(max_length=100, null=True, blank=True)
-    state = models.CharField(max_length=50, null=True, blank=True)
-    lat = models.FloatField(null=True, blank=True)
-    lng = models.FloatField(null=True, blank=True)
+    
+    # Generic relation to Address
+    addresses = GenericRelation('core.Address', related_query_name='establishment')
 
     objects = TenantManager()
 
@@ -51,7 +66,7 @@ class Establishments(TenantModel):
         return f"{self.name} ({self.client.name})"
 
 
-class Lots(TenantModel):
+class Lots(BaseModel):
     establishment = models.ForeignKey(
         "Establishments",
         on_delete=models.PROTECT,
@@ -61,7 +76,7 @@ class Lots(TenantModel):
     lot_code = models.CharField(max_length=50)
     name = models.CharField(max_length=120, null=True, blank=True)
 
-    objects = TenantManager()
+    objects = LotManager()
 
     class Meta:
         db_table = "lots"
@@ -69,12 +84,17 @@ class Lots(TenantModel):
         verbose_name_plural = "Lotes"
         constraints = [
             models.UniqueConstraint(
-                fields=["client", "lot_code"], name="uq_lots_client_code"
+                fields=["establishment", "lot_code"], name="uq_lots_establishment_code"
             ),
         ]
 
     def __str__(self):
         return f"{self.lot_code} - {self.establishment.name}"
+    
+    @property
+    def client(self):
+        """Property para acessar o client via establishment"""
+        return self.establishment.client
 
 
 class SlotTypes(BaseModel):
@@ -105,7 +125,7 @@ class VehicleTypes(BaseModel):
         return self.name
 
 
-class Slots(TenantModel):
+class Slots(BaseModel):
     lot = models.ForeignKey(
         "Lots", on_delete=models.PROTECT, db_column="lot_id", related_name="slots"
     )
@@ -119,7 +139,7 @@ class Slots(TenantModel):
     polygon_json = models.JSONField()
     active = models.BooleanField(default=True)
 
-    objects = TenantManager()
+    objects = SlotManager()
 
     class Meta:
         db_table = "slots"
@@ -130,6 +150,14 @@ class Slots(TenantModel):
                 fields=["lot", "slot_code"], name="uq_slots_lot_code"
             ),
         ]
+
+    def __str__(self):
+        return f"{self.slot_code} - {self.lot.lot_code}"
+    
+    @property
+    def client(self):
+        """Property para acessar o client via lot.establishment"""
+        return self.lot.establishment.client
 
     def __str__(self):
         return f"{self.slot_code} - {self.lot.lot_code}"
@@ -213,3 +241,41 @@ class SlotStatusHistory(BaseModel):
 
     def __str__(self):
         return f"{self.slot.slot_code} - {self.status} ({self.recorded_at})"
+
+
+class UserFavorites(BaseModel):
+    """
+    Modelo para gerenciar estabelecimentos favoritos dos usuários
+    """
+    user = models.ForeignKey(
+        "auth.User",
+        on_delete=models.CASCADE,
+        db_column="user_id",
+        related_name="favorites",
+    )
+    establishment = models.ForeignKey(
+        "Establishments",
+        on_delete=models.CASCADE,
+        db_column="establishment_id",
+        related_name="favorited_by",
+    )
+    
+    objects = SoftDeleteManager()
+
+    class Meta:
+        db_table = "user_favorites"
+        verbose_name = "Favorito do Usuário"
+        verbose_name_plural = "Favoritos dos Usuários"
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user", "establishment"], 
+                name="uq_user_favorites_user_establishment"
+            ),
+        ]
+        indexes = [
+            models.Index(fields=["user"], name="ix_uf_user"),
+            models.Index(fields=["establishment"], name="ix_uf_establishment"),
+        ]
+
+    def __str__(self):
+        return f"{self.user.email} - {self.establishment.name}"

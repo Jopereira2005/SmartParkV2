@@ -9,7 +9,10 @@ urlpatterns = [
     
     # Estabelecimentos
     path('establishments/', views.EstablishmentListCreateView.as_view(), name='establishment-list'),
+    path('establishments/create-with-address/', views.EstablishmentCreateWithAddressView.as_view(), name='establishment-create-with-address'),
     path('establishments/<int:pk>/', views.EstablishmentDetailView.as_view(), name='establishment-detail'),
+    path('establishments/<int:pk>/establishment-address/', views.UpdateEstablishmentAddressView.as_view(), name='establishment-address-update'),
+    path('establishments/<int:pk>/update-with-address/', views.UpdateEstablishmentWithAddressView.as_view(), name='establishment-update-with-address'),
     
     # Lotes
     path('lots/', views.LotListCreateView.as_view(), name='lot-list'),
@@ -29,7 +32,14 @@ urlpatterns = [
     path('slot-status/<int:pk>/', views.SlotStatusDetailView.as_view(), name='slot-status-detail'),
     path('slots/<int:slot_id>/history/', views.SlotStatusHistoryListView.as_view(), name='slot-status-history'),
     
+    # User Favorites
+    path('favorites/', views.UserFavoriteListCreateView.as_view(), name='user-favorites'),
+    path('favorites/<int:pk>/', views.UserFavoriteDestroyView.as_view(), name='user-favorite-delete'),
+    path('favorites/toggle/<int:establishment_id>/', views.toggle_favorite_view, name='toggle-favorite'),
+    
     # Endpoints públicos
     path('public/establishments/', views.public_establishments_view, name='public-establishments'),
     path('public/establishments/<int:establishment_id>/slots/', views.public_slot_status_view, name='public-slot-status'),
+    path('public/establishments/<int:establishment_id>/lots/', views.public_establishment_lots_view, name='public-establishment-lots'),
+    path('public/establishments/lots/', views.public_all_establishments_lots_view, name='public-all-establishments-lots'),
 ]
