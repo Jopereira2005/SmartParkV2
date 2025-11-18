@@ -9,10 +9,9 @@ import EstablishmentCard from '../EstablishmentCard';
 
 interface EstablishmentContainerProps {
   establishments: Establishment[] | [];
-  navigateToEstablishment?: (establishment: Establishment) => void; 
 }
 
-export default function EstablishmentContainer({ establishments, navigateToEstablishment }: EstablishmentContainerProps) {
+export default function EstablishmentContainer({ establishments }: EstablishmentContainerProps) {
   return (
     <div className={ styled.establishment_container }>
       <div className={ styled.establishment_container__header }>
@@ -25,7 +24,6 @@ export default function EstablishmentContainer({ establishments, navigateToEstab
             <EstablishmentCard
               key={ establishment.id_establishment }
               establishment={ establishment }
-              navigateToEstablishment={ navigateToEstablishment }
               isSaved={ false }
             />
           ))) : (

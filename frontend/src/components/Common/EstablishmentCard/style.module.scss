@@ -8,11 +8,13 @@
   border-radius: 15px;
   @include box-shadow;
   cursor: pointer;
-
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  
   &__info {
     @include flex(row, flex-start, center);
     gap: 10px;
-    width: fit-content;
+    width: 100%;
+    text-decoration: none;
 
     &__image {
       border-radius: 5px;
