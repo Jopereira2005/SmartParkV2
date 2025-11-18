@@ -13,10 +13,9 @@ import 'swiper/css/pagination'
 
 interface CategoryCarouselProps {
   categories: Category[] | [];
-  navigateFilter?: (id_category: Category) => void; 
 }
 
-export default function CategoryCarousel({ categories, navigateFilter }: CategoryCarouselProps) {
+export default function CategoryCarousel({ categories }: CategoryCarouselProps) {
   const settings = {
     modules: [Navigation, Pagination, Grid],
     spaceBetween: 10,
