@@ -24,7 +24,7 @@ export default function WelcomeCard({ User, Address, isLogged }: WelcomeCardProp
     <div className={ styled.welcome }>
       <Image
         className={ styled.welcome__image }
-        src="/images/Avatar.png" 
+        src={ isLogged ? "/images/Avatar.png" : "/images/DefaultAvatar2.png" } 
         alt="Avatar" 
         width={ 90 } 
         height={ 90 }

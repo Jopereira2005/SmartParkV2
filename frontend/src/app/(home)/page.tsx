@@ -67,6 +67,7 @@ export default async function HomePage() {
         </div>
         <EstablishmentContainer
           establishments={ establishments }
+          isLogged={ isLogged }
         />
       </div>
       <NavBar />

@@ -1,4 +1,4 @@
-import { use } from 'react'
+"use server"
 import Image from "next/image";
 
 import styled from "./style.module.scss";
@@ -14,11 +14,14 @@ import { Establishment } from '@/interfaces/Establishment';
 
 import { ArrowIcon } from '@/assets/Common/Arrow';
 import { MarkIcon } from '@/assets/Common/Mark';
-import { FilterIcon } from '@/assets/Common/Filter';
+import { ReloadIcon } from '@/assets/Common/Reload';
 
-export default function EstablishmentPage({ params }: { params: Promise<{ id: string }>}){
-  const { id } = use(params)
+import { getUser } from '@/lib/auth/getUser';
 
+export default async function EstablishmentPage({ params }: { params: { id: string } }) {
+  const { isLogged, user } = await getUser();
+  const { id } = await params;
+  
   const slotTypes: SlotType[] = [
     { id_slot_type: "1", name: "Normal" },
     { id_slot_type: "2", name: "Deficiente" },
@@ -102,7 +105,9 @@ export default function EstablishmentPage({ params }: { params: Promise<{ id: st
           />
           <div className={ styled.main__establishment_info__info }>
             <div className={ styled.main__establishment_info__info__saved }>
-              <MarkIcon className={ styled.main__establishment_info__info__saved__icon }/>  
+              { isLogged && user &&
+                <MarkIcon className={ styled.main__establishment_info__info__saved__icon }/>  
+              }
             </div>
             <h1 className={ styled.main__establishment_info__info__name }>{ establishments.name }</h1>
             <p className={ styled.main__establishment_info__info__description }>{ establishments.description }</p>
@@ -134,7 +139,7 @@ export default function EstablishmentPage({ params }: { params: Promise<{ id: st
         <div className={ styled.main__park_container }>
           <div className={ styled.main__park_container__header }>
             <h1 className={ styled.main__park_container__header__title }>Vagas</h1>
-            <FilterIcon className={ styled.main__park_container__header__icon } />
+            <ReloadIcon className={ styled.main__park_container__header__icon } />
           </div>
 
           <div className={ styled.main__park_container__body }>

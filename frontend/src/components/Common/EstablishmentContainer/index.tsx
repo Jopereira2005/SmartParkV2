@@ -9,9 +9,10 @@ import EstablishmentCard from '../EstablishmentCard';
 
 interface EstablishmentContainerProps {
   establishments: Establishment[] | [];
+  isLogged?: boolean;
 }
 
-export default function EstablishmentContainer({ establishments }: EstablishmentContainerProps) {
+export default function EstablishmentContainer({ establishments, isLogged }: EstablishmentContainerProps) {
   return (
     <div className={ styled.establishment_container }>
       <div className={ styled.establishment_container__header }>
@@ -25,6 +26,7 @@ export default function EstablishmentContainer({ establishments }: Establishment
               key={ establishment.id_establishment }
               establishment={ establishment }
               isSaved={ false }
+              isLogged={ isLogged }
             />
           ))) : (
           <p className={ styled.establishment_container__body__empty }>Nenhum estabelecimento encontrado.</p>

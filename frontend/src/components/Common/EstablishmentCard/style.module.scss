@@ -46,9 +46,12 @@
     width: fit-content;
     min-width: 90px;
     @include flex(row, flex-end, center);
+    
+    &__space {
+      width: 10px;
+    }
 
     &__div {
-      min-width: 10px;
       height: 30px;
       @include flex(row, flex-end, center);
       

@@ -13,10 +13,11 @@ import { MarkIcon } from "@/assets/Common/Mark";
 
 interface EstablishmentCardProps {
   establishment: Establishment;
+  isLogged?: boolean;
   isSaved: boolean;
 }
 
-export default function EstablishmentCard({ establishment, isSaved }: EstablishmentCardProps) {
+export default function EstablishmentCard({ establishment, isLogged, isSaved }: EstablishmentCardProps) {
   return (
     <div className={ styled.establishment_card }>
       <Link href={`/establishment/${establishment.id_establishment}`} className={ styled.establishment_card__info }>
@@ -34,8 +35,13 @@ export default function EstablishmentCard({ establishment, isSaved }: Establishm
       </Link>
       <div className={ styled.establishment_card__others }>
         <ParkCounter maxParkingSpots={ 100 } occupiedSpots={ 100 }/>
-        <div className={ styled.establishment_card__others__div }></div>
-        <MarkIcon className={ `${ styled.establishment_card__others__icon } ${ isSaved ? styled.establishment_card__others__icon__isMarked : '' }` }/>
+        <div className={ styled.establishment_card__others__space }></div>
+        { isLogged &&
+          <>
+            <div className={ styled.establishment_card__others__div }></div>
+            <MarkIcon className={ `${ styled.establishment_card__others__icon } ${ isSaved ? styled.establishment_card__others__icon__isMarked : '' }` }/>
+          </> 
+        }
       </div>
     </div>
   );
