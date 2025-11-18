@@ -6,7 +6,9 @@ from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.db.models import Q
 from django.contrib.contenttypes.models import ContentType
-from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiResponse
+from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiResponse, OpenApiParameter
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.openapi import OpenApiExample
 from apps.core.models import Address
 
 from .models import (
@@ -32,6 +34,7 @@ from .serializers import (
     SlotStatusSerializer,
     SlotStatusHistorySerializer,
     SlotStatusUpdateSerializer,
+    PublicEstablishmentLotsResponseSerializer,
 )
 from apps.core.permissions import IsClientAdminForClient, IsClientMember
 from apps.core.views import (
@@ -616,3 +619,100 @@ class UpdateEstablishmentWithAddressView(generics.UpdateAPIView):
             establishment_data = EstablishmentSerializer(establishment).data
             return Response(establishment_data)
         return response
+
+
+# ==================== PUBLIC ENDPOINTS ====================
+
+@extend_schema(
+    summary="Get establishment lots and slots (hierarchical)",
+    description="Get lots and slots for a specific establishment organized in hierarchical structure",
+    parameters=[
+        OpenApiParameter(
+            name="establishment_id",
+            type=OpenApiTypes.INT,
+            location=OpenApiParameter.PATH,
+            description="ID of the establishment",
+            required=True
+        )
+    ],
+    responses={
+        200: OpenApiResponse(
+            description="Establishment lots and slots organized hierarchically",
+            response=PublicEstablishmentLotsResponseSerializer
+        ),
+        404: OpenApiResponse(description="Establishment not found"),
+    },
+    tags=["Catalog - Public"],
+)
+@api_view(["GET"])
+@permission_classes([permissions.AllowAny])
+def public_establishment_lots_view(request, establishment_id):
+    """
+    Endpoint público para obter estrutura hierárquica de lotes e vagas
+    
+    Retorna:
+    {
+        "establishment_id": 1,
+        "establishment_name": "Shopping Center",
+        "lots": {
+            "lot_code": {
+                "lot_name": "Nome do Lote",
+                "slots": {
+                    "slot_code": {
+                        "slot_type": "Tipo da Vaga",
+                        "status": "Status da Vaga"
+                    }
+                }
+            }
+        }
+    }
+    """
+    try:
+        # Buscar estabelecimento com todos os relacionamentos necessários
+        establishment = Establishments.objects.prefetch_related(
+            'lots__slots__slot_type',
+            'lots__slots__current_status'
+        ).get(id=establishment_id)
+        
+        # Construir estrutura hierárquica
+        result = {
+            "establishment_id": establishment.id,
+            "establishment_name": establishment.name,
+            "lots": {}
+        }
+        
+        # Processar cada lote
+        for lot in establishment.lots.all():
+            lot_data = {
+                "lot_name": lot.name or f"Lote {lot.lot_code}",
+                "slots": {}
+            }
+            
+            # Processar cada vaga do lote
+            for slot in lot.slots.filter(active=True):
+                # Obter status atual da vaga
+                try:
+                    current_status = slot.current_status.get()
+                    status_value = current_status.status
+                except SlotStatus.DoesNotExist:
+                    status_value = "UNKNOWN"
+                
+                # Dados da vaga
+                slot_data = {
+                    "slot_type": slot.slot_type.name,
+                    "status": status_value
+                }
+                
+                # Adicionar vaga ao lote usando slot_code como chave
+                lot_data["slots"][slot.slot_code] = slot_data
+            
+            # Adicionar lote ao resultado usando lot_code como chave
+            result["lots"][lot.lot_code] = lot_data
+        
+        return Response(result, status=status.HTTP_200_OK)
+        
+    except Establishments.DoesNotExist:
+        return Response(
+            {"error": "Establishment not found"},
+            status=status.HTTP_404_NOT_FOUND
+        )

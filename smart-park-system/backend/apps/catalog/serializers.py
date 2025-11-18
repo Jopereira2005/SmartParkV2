@@ -257,3 +257,62 @@ class UpdateEstablishmentWithAddressSerializer(TenantModelSerializer):
                 address.save()
         
         return instance
+
+
+# ==================== PUBLIC SERIALIZERS ====================
+
+class PublicSlotInfoSerializer(serializers.Serializer):
+    """Serializer para informações de uma vaga específica"""
+    slot_type = serializers.CharField(help_text="Tipo da vaga (ex: Carro, Moto)")
+    status = serializers.CharField(help_text="Status da vaga (FREE, OCCUPIED, RESERVED, MAINTENANCE, DISABLED)")
+
+
+class PublicLotInfoSerializer(serializers.Serializer):
+    """Serializer para informações de um lote específico"""
+    lot_name = serializers.CharField(help_text="Nome do lote")
+    slots = serializers.DictField(
+        child=PublicSlotInfoSerializer(),
+        help_text="Dicionário com código da vaga como chave e informações como valor"
+    )
+
+
+class PublicEstablishmentLotsResponseSerializer(serializers.Serializer):
+    """Serializer para resposta hierárquica de lotes e vagas de um estabelecimento"""
+    establishment_id = serializers.IntegerField(help_text="ID do estabelecimento")
+    establishment_name = serializers.CharField(help_text="Nome do estabelecimento")
+    lots = serializers.DictField(
+        child=PublicLotInfoSerializer(),
+        help_text="Dicionário com código do lote como chave e informações como valor"
+    )
+    
+    class Meta:
+        examples = {
+            "example_response": {
+                "establishment_id": 1,
+                "establishment_name": "Shopping Center Plaza",
+                "lots": {
+                    "A1": {
+                        "lot_name": "Lote A1",
+                        "slots": {
+                            "A1-001": {
+                                "slot_type": "Carro",
+                                "status": "FREE"
+                            },
+                            "A1-002": {
+                                "slot_type": "Moto",
+                                "status": "OCCUPIED"
+                            }
+                        }
+                    },
+                    "B1": {
+                        "lot_name": "Lote B1", 
+                        "slots": {
+                            "B1-001": {
+                                "slot_type": "Carro",
+                                "status": "RESERVED"
+                            }
+                        }
+                    }
+                }
+            }
+        }
