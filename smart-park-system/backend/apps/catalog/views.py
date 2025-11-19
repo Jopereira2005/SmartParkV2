@@ -174,8 +174,8 @@ class EstablishmentCreateWithAddressView(
 @extend_schema_view(
     get=extend_schema(
         summary="Get establishment details",
-        description="Retrieve details of a specific establishment",
-        tags=["Tenants - Establishments"],
+        description="Public endpoint to retrieve details of a specific establishment",
+        tags=["Catalog - Public"],
     ),
     put=extend_schema(
         summary="Update establishment",
@@ -198,6 +198,14 @@ class EstablishmentDetailView(
 ):
     serializer_class = EstablishmentSerializer
     permission_classes = [IsClientAdminForClient]
+    
+    def get_permissions(self):
+        """
+        Override permissions to allow public access for GET requests
+        """
+        if self.request.method == 'GET':
+            return [permissions.AllowAny()]
+        return [permission() for permission in self.permission_classes]
 
 
 @extend_schema_view(
