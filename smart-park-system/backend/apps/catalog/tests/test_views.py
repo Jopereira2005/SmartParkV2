@@ -172,17 +172,23 @@ class EstablishmentViewsTest(APITestCase, TestDataMixin):
         self.assertEqual(response.data["results"][0]["name"], "Mall ABC")
 
     def test_establishment_detail(self):
-        """Testa detalhes de estabelecimento"""
-        # Use admin user for detail view
-        admin_role, _ = Group.objects.get_or_create(name="client_admin")
-        admin_user = self.create_client_admin_user()
-        admin_user.client_members.create(client=self.client_obj, role=admin_role)
-        self.client.force_authenticate(user=admin_user)
-
+        """Testa detalhes de estabelecimento com autenticação e acesso público"""
         establishment = self.create_establishment(
             client=self.client_obj, name="Test Mall"
         )
         url = reverse("catalog:establishment-detail", kwargs={"pk": establishment.pk})
+
+        # First test public access (without authentication)
+        self.client.force_authenticate(user=None)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["name"], "Test Mall")
+
+        # Then test with admin user for completeness
+        admin_role, _ = Group.objects.get_or_create(name="client_admin")
+        admin_user = self.create_client_admin_user()
+        admin_user.client_members.create(client=self.client_obj, role=admin_role)
+        self.client.force_authenticate(user=admin_user)
 
         response = self.client.get(url)
 
@@ -727,3 +733,22 @@ class PublicAPIViewsTest(APITestCase, TestDataMixin):
             slot_data["status"]["vehicle_type"], "Car"
         )  # This tests line 467
         self.assertEqual(slot_data["status"]["status"], "OCCUPIED")
+
+    def test_public_establishment_detail(self):
+        """Testa acesso público aos detalhes de um estabelecimento"""
+        client_obj = self.create_client(onboarding_status="ACTIVE")
+        establishment = self.create_establishment(
+            client=client_obj,
+            name="Public Mall Detail",
+            address="456 Detail St",
+            city="Detail City",
+        )
+
+        url = reverse("catalog:establishment-detail", kwargs={"pk": establishment.pk})
+
+        # Test without authentication (public access)
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["name"], "Public Mall Detail")
+        self.assertEqual(response.data["id"], establishment.id)
