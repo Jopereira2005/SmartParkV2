@@ -1,0 +1,178 @@
+# Configuração de Debug para SmartPark Computer Vision
+# Esta configuração habilita logs detalhados e visualizações para troubleshooting
+
+# =============================================================================
+# CONFIGURAÇÕES DA API - DEBUG
+# =============================================================================
+api:
+  base_url: "http://localhost:8000"
+  endpoints:
+    slot_status: "/api/hardware/events/slot-status/"
+  api_key: "AVytq1ggEz38igCIWEVe6x5pdq_EZOm_t1SYI40Wa8U"
+  hardware_code: "CAM-DEMO-01"
+  lot_id: 18
+  timeout: 10                  # Timeout menor para debug
+  retry_attempts: 1            # Menos tentativas para debug rápido
+  retry_delay: 0.5
+
+# =============================================================================
+# CONFIGURAÇÕES DE VÍDEO - DEBUG
+# =============================================================================
+video:
+  source: 0                    # Webcam para teste
+  fps: 15                      # FPS menor para debug detalhado
+  resolution: [640, 480]       # Resolução menor para debug
+  buffer_size: 1
+
+# =============================================================================
+# CONFIGURAÇÕES DOS DETECTORES - DEBUG
+# =============================================================================
+detectors:
+  threshold:
+    blur_kernel: 15
+    threshold_value: 20        # Valor menor para mais sensibilidade
+    min_area: 500              # Área menor para detectar mais
+    erosion_kernel: 2
+    dilation_kernel: 4
+    
+  yolo:
+    model: "yolov8n.pt"        # Modelo mais rápido para debug
+    confidence: 0.3            # Confiança menor para ver mais detecções
+    device: "cpu"
+    iou_threshold: 0.5
+    max_detections: 100
+    classes: [2, 3, 5, 7]
+    
+  hybrid:
+    fusion_method: "consensus_priority"
+    threshold_weight: 0.5
+    yolo_weight: 0.5
+    confidence_boost: 0.05
+    disagreement_penalty: 0.1
+
+# =============================================================================
+# ZONAS DE TESTE PARA DEBUG
+# =============================================================================
+zones:
+  # Zonas para debug com IDs reais do banco
+  - id: 204
+    name: "Debug Zone V001"
+    coords: [[50, 50], [150, 50], [150, 150], [50, 150]]
+    type: "test"
+    enabled: true
+    
+  - id: 205
+    name: "Debug Zone V002"
+    coords: [[200, 50], [300, 50], [300, 150], [200, 150]]
+    type: "test"
+    enabled: true
+
+# =============================================================================
+# CONFIGURAÇÕES DE LOGGING - DEBUG MÁXIMO
+# =============================================================================
+logging:
+  level: "DEBUG"               # Logs máximos
+  file_enabled: true
+  console_enabled: true
+  max_file_size: "5MB"         # Arquivo menor para debug
+  backup_count: 3
+  
+  # Logs detalhados para todos os módulos
+  modules:
+    "smartpark.detector": "DEBUG"
+    "smartpark.api_client": "DEBUG"
+    "smartpark.yolo_detector": "DEBUG"
+    "smartpark.threshold_detector": "DEBUG"
+    "smartpark.hybrid_detector": "DEBUG"
+    "smartpark.performance_tracker": "DEBUG"
+
+# =============================================================================
+# CONFIGURAÇÕES DE PERFORMANCE - DEBUG
+# =============================================================================
+performance:
+  enabled: true
+  save_interval: 10            # Salvar métricas com frequência
+  metrics_file: "logs/debug_metrics.json"
+  benchmark_iterations: 10     # Menos iterações para debug rápido
+  
+  alerts:
+    min_fps: 5                 # Limites mais baixos para debug
+    max_processing_time: 1.0
+    max_memory_usage: 90
+
+# =============================================================================
+# CONFIGURAÇÕES DE DEBUG - TUDO HABILITADO
+# =============================================================================
+debug:
+  enabled: true                # Debug sempre ligado
+  save_frames: true            # Salvar frames para análise
+  save_directory: "debug_frames"
+  overlay_info: true
+  show_zones: true
+  show_detections: true
+  
+  # Cores mais visíveis para debug
+  colors:
+    zone_free: [0, 255, 0]         # Verde brilhante
+    zone_occupied: [0, 0, 255]     # Vermelho brilhante
+    zone_border: [255, 255, 0]     # Amarelo para melhor visibilidade
+    detection_box: [255, 0, 255]   # Magenta
+    text: [255, 255, 255]          # Branco
+    
+  font:
+    scale: 0.8                 # Texto maior para debug
+    thickness: 2
+
+# =============================================================================
+# PROCESSAMENTO DE IMAGEM - CONFIGURAÇÕES DE DEBUG
+# =============================================================================
+image_processing:
+  preprocessing:
+    enabled: true
+    gaussian_blur: 3           # Blur leve para não perder detalhes
+    median_blur: 0             # Desabilitado para debug
+    sharpen: false
+    
+  adjustments:
+    brightness: 0
+    contrast: 1.2              # Contraste levemente aumentado
+    saturation: 1.0
+    gamma: 1.0
+    
+  morphology:
+    enabled: true
+    erosion_iterations: 1
+    dilation_iterations: 1
+    opening: false
+    closing: false
+
+# =============================================================================
+# NOTIFICAÇÕES - HABILITADAS PARA DEBUG
+# =============================================================================
+notifications:
+  enabled: true                # Habilitar para ver notificações
+  
+  webhook:
+    url: ""                    # Vazio para debug local
+    timeout: 5
+    retry_attempts: 1
+    
+  triggers:
+    occupancy_change: true     # Todas as notificações habilitadas
+    system_error: true
+    performance_alert: true
+
+# =============================================================================
+# FEATURES EXPERIMENTAIS - HABILITADAS PARA TESTE
+# =============================================================================
+experimental:
+  multi_threading: false      # Deixar simples para debug
+  gpu_acceleration: false
+  adaptive_threshold: true    # Testar threshold adaptativo
+  motion_detection: true      # Testar detector de movimento
+  
+  adaptive_learning:
+    enabled: false             # Não usar ML durante debug
+    learning_rate: 0.01
+    adaptation_interval: 100
+    confidence_threshold: 0.9
