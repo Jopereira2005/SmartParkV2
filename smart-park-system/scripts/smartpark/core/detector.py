@@ -284,6 +284,7 @@ class SmartParkDetector(LoggerMixin):
                             slot_id=slot_id,
                             status=change["current_status"],
                             confidence=change["confidence"],
+                            immediate=True,  # Forçar envio imediato
                         )
                         responses.append(response)
 

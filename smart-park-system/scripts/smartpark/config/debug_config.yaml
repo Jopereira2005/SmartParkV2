@@ -8,6 +8,8 @@ api:
   base_url: "http://localhost:8000"
   endpoints:
     slot_status: "/api/hardware/events/slot-status/"
+    heartbeat: "/api/hardware/heartbeats/"
+    health_check: "/health/"
   api_key: "AVytq1ggEz38igCIWEVe6x5pdq_EZOm_t1SYI40Wa8U"
   hardware_code: "CAM-DEMO-01"
   lot_id: 18
