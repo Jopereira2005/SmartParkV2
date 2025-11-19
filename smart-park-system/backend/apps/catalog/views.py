@@ -472,10 +472,13 @@ def public_establishments_view(request):
     """Endpoint público para listar estabelecimentos"""
     establishments = Establishments.objects.filter(
         client__onboarding_status="ACTIVE"
-    ).select_related("store_type", "client")
+    ).select_related("store_type", "client").prefetch_related("addresses")
 
     data = []
     for establishment in establishments:
+        # Pegar o primeiro endereço (assumindo um endereço por estabelecimento)
+        address = establishment.addresses.first()
+        
         data.append(
             {
                 "id": establishment.id,
@@ -483,11 +486,22 @@ def public_establishments_view(request):
                 "store_type": (
                     establishment.store_type.name if establishment.store_type else None
                 ),
-                "address": establishment.address,
-                "city": establishment.city,
-                "state": establishment.state,
-                "lat": establishment.lat,
-                "lng": establishment.lng,
+                "address": {
+                    "street": address.street if address else None,
+                    "number": address.number if address else None,
+                    "complement": address.complement if address else None,
+                    "neighborhood": address.neighborhood if address else None,
+                    "city": address.city if address else None,
+                    "state": address.state if address else None,
+                    "postal_code": address.postal_code if address else None,
+                    "country": address.country if address else None,
+                } if address else None,
+                "city": address.city if address else None,
+                "state": address.state if address else None,
+                # Campos lat/lng não existem no modelo Address atual
+                # Se necessário, podem ser adicionados futuramente
+                "lat": None,
+                "lng": None,
             }
         )
 
