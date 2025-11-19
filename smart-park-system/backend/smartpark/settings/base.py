@@ -271,6 +271,7 @@ CORS_ALLOW_HEADERS = [
     "x-api-key",
     "x-signature",
     "x-timestamp",
+    "ngrok-skip-browser-warning",
 ]
 
 # Métodos permitidos
