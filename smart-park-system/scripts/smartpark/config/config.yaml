@@ -1,0 +1,210 @@
+# Configuração Principal do SmartPark Computer Vision
+
+# =============================================================================
+# CONFIGURAÇÕES DA API
+# =============================================================================
+api:
+  base_url: "http://localhost:8000"
+  endpoints:
+    slot_status: "/api/hardware/events/slot-status/"
+  api_key: "AVytq1ggEz38igCIWEVe6x5pdq_EZOm_t1SYI40Wa8U"
+  hardware_code: "CAM-DEMO-01"
+  lot_id: 18
+  timeout: 30
+  retry_attempts: 3
+  retry_delay: 1.0
+
+# =============================================================================
+# CONFIGURAÇÕES DE VÍDEO
+# =============================================================================
+video:
+  source: 0                    # 0 para webcam, string para arquivo de vídeo
+  fps: 30                      # FPS desejado para processamento
+  resolution: [1280, 720]      # Resolução [largura, altura] (se suportado)
+  buffer_size: 1               # Buffer da câmera (1 = mínimo delay)
+
+# =============================================================================
+# CONFIGURAÇÕES DOS DETECTORES
+# =============================================================================
+detectors:
+  # Detector baseado em Threshold
+  threshold:
+    blur_kernel: 15            # Tamanho do kernel de blur (deve ser ímpar)
+    threshold_value: 25        # Valor do threshold para diferenças
+    min_area: 1000             # Área mínima para considerar ocupação
+    erosion_kernel: 3          # Kernel para erosão morfológica
+    dilation_kernel: 5         # Kernel para dilatação morfológica
+    
+  # Detector YOLO
+  yolo:
+    model: "yolov8n.pt"        # Modelo YOLO (n=nano, s=small, m=medium, l=large, x=xlarge)
+    confidence: 0.5            # Confiança mínima para detecções (0.0-1.0)
+    device: "cpu"              # "cpu" ou "cuda" (se disponível)
+    iou_threshold: 0.45        # Threshold para Non-Maximum Suppression
+    max_detections: 300        # Máximo de detecções por frame
+    classes: [2, 3, 5, 7]      # Classes COCO: car, motorcycle, bus, truck
+    
+  # Detector Híbrido
+  hybrid:
+    fusion_method: "consensus_priority"  # Método: consensus_priority, conservative, weighted_average
+    threshold_weight: 0.4      # Peso do detector threshold (0.0-1.0)
+    yolo_weight: 0.6          # Peso do detector YOLO (0.0-1.0)
+    confidence_boost: 0.1      # Boost na confiança quando ambos concordam
+    disagreement_penalty: 0.2  # Penalidade quando discordam
+
+# =============================================================================
+# ZONAS DE DETECÇÃO (COORDENADAS DAS VAGAS)
+# =============================================================================
+zones:
+  # Vaga V001 (ID real: 204)
+  - id: 204
+    name: "Vaga V001"
+    coords: [[50, 50], [150, 50], [150, 150], [50, 150]]  # [x,y] de cada canto
+    type: "regular"
+    enabled: true
+    
+  # Vaga V002 (ID real: 205)
+  - id: 205
+    name: "Vaga V002"
+    coords: [[200, 50], [300, 50], [300, 150], [200, 150]]
+    type: "regular"
+    enabled: true
+    
+  # Vaga V003 (ID real: 206)
+  - id: 206
+    name: "Vaga V003"
+    coords: [[350, 50], [450, 50], [450, 150], [350, 150]]
+    type: "regular"
+    enabled: true
+    
+  # Vaga V004 (ID real: 207)
+  - id: 207
+    name: "Vaga V004"
+    coords: [[500, 50], [600, 50], [600, 150], [500, 150]]
+    type: "regular"
+    enabled: true
+    
+  # Vaga V005 (ID real: 208)
+  - id: 208
+    name: "Vaga V005"
+    coords: [[50, 200], [150, 200], [150, 300], [50, 300]]
+    type: "regular"
+    enabled: true
+
+# =============================================================================
+# CONFIGURAÇÕES DE LOGGING
+# =============================================================================
+logging:
+  level: "INFO"                # DEBUG, INFO, WARNING, ERROR, CRITICAL
+  file_enabled: true           # Salvar logs em arquivo
+  console_enabled: true        # Exibir logs no console
+  max_file_size: "10MB"        # Tamanho máximo do arquivo de log
+  backup_count: 5              # Número de backups de log
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  
+  # Configurações específicas por módulo
+  modules:
+    "smartpark.detector": "INFO"
+    "smartpark.api_client": "WARNING"
+    "smartpark.yolo_detector": "ERROR"
+    "smartpark.threshold_detector": "INFO"
+
+# =============================================================================
+# CONFIGURAÇÕES DE PERFORMANCE
+# =============================================================================
+performance:
+  enabled: true                # Habilitar tracking de performance
+  save_interval: 100           # Salvar métricas a cada N frames
+  metrics_file: "logs/metrics.json"
+  benchmark_iterations: 50     # Iterações para benchmark inicial
+  
+  # Limites de alerta
+  alerts:
+    min_fps: 10               # FPS mínimo aceitável
+    max_processing_time: 0.5  # Tempo máximo por frame (segundos)
+    max_memory_usage: 80      # % máximo de memória RAM
+
+# =============================================================================
+# CONFIGURAÇÕES DE DEBUG E VISUALIZAÇÃO
+# =============================================================================
+debug:
+  enabled: false               # Habilitar por padrão
+  save_frames: false          # Salvar frames para debug
+  save_directory: "debug_frames"
+  overlay_info: true          # Mostrar informações na tela
+  show_zones: true            # Mostrar zonas de detecção
+  show_detections: true       # Mostrar objetos detectados
+  
+  # Cores para visualização (BGR)
+  colors:
+    zone_free: [0, 255, 0]         # Verde para vaga livre
+    zone_occupied: [0, 0, 255]     # Vermelho para vaga ocupada
+    zone_border: [255, 255, 255]   # Branco para borda da zona
+    detection_box: [255, 0, 255]   # Magenta para caixas de detecção
+    text: [255, 255, 255]          # Branco para texto
+    
+  # Configurações de texto
+  font:
+    scale: 0.6
+    thickness: 2
+    
+# =============================================================================
+# CONFIGURAÇÕES DE PROCESSAMENTO DE IMAGEM
+# =============================================================================
+image_processing:
+  # Pré-processamento
+  preprocessing:
+    enabled: true
+    gaussian_blur: 5           # Kernel para blur gaussiano (0 = desabilitado)
+    median_blur: 3             # Kernel para blur mediano (0 = desabilitado)
+    sharpen: false             # Aplicar sharpening
+    
+  # Ajustes de imagem
+  adjustments:
+    brightness: 0              # Ajuste de brilho (-100 a 100)
+    contrast: 1.0              # Ajuste de contraste (0.5 a 2.0)
+    saturation: 1.0            # Ajuste de saturação (0.0 a 2.0)
+    gamma: 1.0                 # Correção gamma (0.1 a 3.0)
+    
+  # Filtros morfológicos
+  morphology:
+    enabled: true
+    erosion_iterations: 1      # Número de iterações de erosão
+    dilation_iterations: 2     # Número de iterações de dilatação
+    opening: false             # Aplicar operação de opening
+    closing: true              # Aplicar operação de closing
+
+# =============================================================================
+# CONFIGURAÇÕES DE NOTIFICAÇÕES
+# =============================================================================
+notifications:
+  enabled: false               # Habilitar notificações
+  
+  # Webhook para notificações
+  webhook:
+    url: ""                    # URL do webhook
+    timeout: 10                # Timeout em segundos
+    retry_attempts: 3          # Tentativas em caso de falha
+    
+  # Condições para notificação
+  triggers:
+    occupancy_change: true     # Notificar mudança de ocupação
+    system_error: true         # Notificar erros do sistema
+    performance_alert: true    # Notificar problemas de performance
+
+# =============================================================================
+# CONFIGURAÇÕES EXPERIMENTAIS
+# =============================================================================
+experimental:
+  # Features experimentais
+  multi_threading: false      # Processamento multi-thread
+  gpu_acceleration: false     # Aceleração GPU (se disponível)
+  adaptive_threshold: false   # Threshold adaptativo
+  motion_detection: false     # Detector de movimento adicional
+  
+  # Configurações de ML adaptativo
+  adaptive_learning:
+    enabled: false             # Machine learning adaptativo
+    learning_rate: 0.01        # Taxa de aprendizado
+    adaptation_interval: 1000  # Frames entre adaptações
+    confidence_threshold: 0.8  # Threshold para aceitar adaptações
