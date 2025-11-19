@@ -1,4 +1,4 @@
-"use client";
+"use server";
 import Image from "next/image";
 
 import styled from "./style.module.scss";
@@ -12,8 +12,11 @@ import { Category } from '@/interfaces/Category';
 import { Establishment } from '@/interfaces/Establishment';
 
 import { ArrowIcon } from '@/assets/Common/Arrow';
+import { getUser } from "@/lib/auth/getUser";
 
-export default function SearchPage() {
+export default async function SearchPage() {
+  const { isLogged, user } = await getUser();
+  
   const categories: Category[] = [
     { id_category: "1", name: "Estacionamentos", image: "/images/Estacionamento.png" },
     { id_category: "2", name: "Supermercados", image: "/images/Supermercado.png" },
@@ -28,29 +31,16 @@ export default function SearchPage() {
     { id_category: "11", name: "Escolas", image: "/images/Escola.png" }
   ];
 
-  const establishments: Establishment[] = [
-    { id_establishment: "1", name: "Facens", description: "Faculdade de Engenharia de Sorocaba", address: { address: "Rodovia Senador José Ermírio de Moraes, 1425", district: "Jardim Constantino Matucci", city: "Sorocaba", state: "SP", cep: "18085-784" } },
-    { id_establishment: "2", name: "Facens", description: "Faculdade de Engenharia de Sorocaba", address: { address: "Rodovia Senador José Ermírio de Moraes, 1425", district: "Jardim Constantino Matucci", city: "Sorocaba", state: "SP", cep: "18085-784" } },
-    { id_establishment: "3", name: "Facens", description: "Faculdade de Engenharia de Sorocaba", address: { address: "Rodovia Senador José Ermírio de Moraes, 1425", district: "Jardim Constantino Matucci", city: "Sorocaba", state: "SP", cep: "18085-784" } },
-    { id_establishment: "4", name: "Facens", description: "Faculdade de Engenharia de Sorocaba", address: { address: "Rodovia Senador José Ermírio de Moraes, 1425", district: "Jardim Constantino Matucci", city: "Sorocaba", state: "SP", cep: "18085-784" } },
-    { id_establishment: "5", name: "Facens", description: "Faculdade de Engenharia de Sorocaba", address: { address: "Rodovia Senador José Ermírio de Moraes, 1425", district: "Jardim Constantino Matucci", city: "Sorocaba", state: "SP", cep: "18085-784" } },
-    { id_establishment: "6", name: "Facens", description: "Faculdade de Engenharia de Sorocaba", address: { address: "Rodovia Senador José Ermírio de Moraes, 1425", district: "Jardim Constantino Matucci", city: "Sorocaba", state: "SP", cep: "18085-784" } }
-  ];
 
   return (
     <div className={ styled.home }>
       <div className={ styled.main }>
-        <SearchBar 
-          establishments={ establishments }
-          navigateTo={ (establishment) => console.log(establishment) }
-          loadItens={ () => Promise.resolve() }
-          saveFunction={ (establishment) => console.log(establishment) }
-        />
+        <SearchBar isLogged={ isLogged } />
         <div className={ styled.main__categories }>
           <h1 className={ styled.main__categories__title }>Categorias</h1>
           <CategoryCarousel categories={ categories } />
         </div>
-        <EstablishmentContainer establishments={ establishments } />
+        <EstablishmentContainer isLogged={ isLogged } />
       </div>
       <NavBar />
     </div>

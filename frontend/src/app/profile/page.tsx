@@ -20,12 +20,14 @@ export default async function ProfilePage() {
   const { isLogged, user } = await getUser();
 
   const address: Address = {
-    id_address: "1",
-    address: "R.Smart Park, 98", 
-    district: "Conj. Hab Eng da Computação", 
+    id: "1",
+    street: "R.Smart Park", 
+    number: "98", 
+    neighborhood: "Conj. Hab Eng da Computação", 
+    country: "Brasil",
     city: "Sorocaba", 
     state: "SP", 
-    cep: "18085-784" 
+    postal_code: "18085-784" 
   }
 
   return (

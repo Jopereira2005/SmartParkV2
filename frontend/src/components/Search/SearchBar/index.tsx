@@ -1,5 +1,6 @@
 "use client";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from 'react';
 
 import styled from "./style.module.scss";
@@ -10,18 +11,46 @@ import { Establishment } from '@/interfaces/Establishment';
 
 import SearchBarItem from "@/components/Search/SearchBarItem";
 
+import establishmentService from "@/services/establishmentService";
+
 interface SearchBarProps {
-  establishments: Establishment[];
-  saveFunction?: (establishment: Establishment) => void;
-  navigateTo: (id_establishment: Establishment) => void;
-  loadItens: () => Promise<void>
+  isLogged: boolean;
 }
 
-export default function SearchBar({ establishments, saveFunction, navigateTo, loadItens }: SearchBarProps) {
+export default function SearchBar({ isLogged }: SearchBarProps) {
+  const pathname = usePathname();
   const [filteredList, setFilteredList] = useState<Establishment[]>([]);
   const [inputValue, setInputValue] = useState('');
 
   const listaRef = useRef<HTMLDivElement | null>(null);
+
+  const [establishments, setEstablishments] = useState<Establishment[] | []>([]);
+  const [alertProps, setAlertProps] = useState({ message: '', timeDuration: 0, type: 'success' as 'success' | 'error' });
+  const [alertOpen, setAlertOpen] = useState(false)
+
+  async function loadEstablishments() {
+    try {
+      const data = await establishmentService.list_establishments();
+
+      if(!data) {
+        throw data.error;
+      }
+
+      setEstablishments(data);
+    } catch {
+      setEstablishments([]);
+      setAlertProps({ message: 'Erro ao carregar estabelecimentos.', timeDuration: 3000, type: 'error' });
+      setAlertOpen(true);
+    }
+  }
+
+  useEffect(() => {
+    if(pathname === "/search") {
+      loadEstablishments();
+    }
+    const interval = setInterval(loadEstablishments, 15000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleClickOutside = (e: MouseEvent) => {
     if (listaRef.current && !listaRef.current.contains(e.target as Node)) {
@@ -46,7 +75,7 @@ export default function SearchBar({ establishments, saveFunction, navigateTo, lo
     <div className={ styled.search_bar } ref={ listaRef }>
       <div className={ styled.search_bar__container }>
         <SearchIcon className={ styled.search_bar__container__icon }/>
-        <input onFocus={ loadItens } className={ styled.search_bar__container__input } 
+        <input onFocus={ loadEstablishments } className={ styled.search_bar__container__input } 
           type="text" 
           placeholder="Buscar estabelecimento..."
           value={ inputValue }
@@ -58,10 +87,8 @@ export default function SearchBar({ establishments, saveFunction, navigateTo, lo
           { filteredList.length !== 0 ? 
             filteredList.map((establishment) => (
               <SearchBarItem
-                key={ establishment.id_establishment }
+                key={ establishment.id }
                 establishment={ establishment }
-                saveFunction={ saveFunction }
-                navigateTo={ navigateTo }
                 isSaved={ false }
               />
             )) :

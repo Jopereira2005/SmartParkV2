@@ -5,7 +5,7 @@ import styled from "./style.module.scss";
 
 import NavBar from '@/components/Common/NavBar';
 import Header from '@/components/Establishment/Header';
-import SlotContainer from '@/components/Establishment/SlotContainer';
+import ParkContainer from "@/components/Establishment/ParkContainer";
 
 import { Lot } from '@/interfaces/Lot';
 import { Slot } from '@/interfaces/Slot';
@@ -14,14 +14,24 @@ import { Establishment } from '@/interfaces/Establishment';
 
 import { ArrowIcon } from '@/assets/Common/Arrow';
 import { MarkIcon } from '@/assets/Common/Mark';
-import { ReloadIcon } from '@/assets/Common/Reload';
 
 import { getUser } from '@/lib/auth/getUser';
+
+import homeService from '@/services/establishmentService';
 
 export default async function EstablishmentPage({ params }: { params: { id: string } }) {
   const { isLogged, user } = await getUser();
   const { id } = await params;
-  
+
+
+  try {
+    const establishment: any = await homeService.get_establishment_info(id);
+
+  } catch (error) {
+    console.error("Erro ao carregar os dados do estabelecimento:", error);
+    
+  }
+
   const slotTypes: SlotType[] = [
     { id_slot_type: "1", name: "Normal" },
     { id_slot_type: "2", name: "Deficiente" },
@@ -71,20 +81,19 @@ export default async function EstablishmentPage({ params }: { params: { id: stri
     description: "Faculdade de Engenharia de Sorocaba", 
     phone_number: "(15) 3232-3232",
     address: { 
-      address: "Rodovia Senador José Ermírio de Moraes, 1425", 
-      district: "Jardim Constantino Matucci", 
+      street: "Rodovia Senador José Ermírio de Moraes", 
+      number: "1425",
+      neighborhood: "Jardim Constantino Matucci", 
+      country: "Brasil",
       city: "Sorocaba", 
       state: "SP", 
-      cep: "18085-784" 
+      postal_code: "18085-784" 
     },
   };
   
   return (
     <div className={ styled.establishment }>
-      <Header 
-        lots={ lots }
-        slots={ slots }
-      />
+      <Header id_establishment={ id } />
       <div className={ styled.main }>
         <div className={ styled.main__establishment_info }>
           <div className={ styled.main__establishment_info__banner }>
@@ -117,7 +126,7 @@ export default async function EstablishmentPage({ params }: { params: { id: stri
             <div className={ styled.main__establishment_info__info__address }>
               <div className={ styled.main__establishment_info__info__address__texts }>
                 <h2 className={ styled.main__establishment_info__info__address__texts__title }>Endereço:</h2>
-                <p className={ styled.main__establishment_info__info__address__texts__description }> { establishments.address?.address } - { establishments.address?.district }, { establishments.address?.city } - { establishments.address?.state }, { establishments.address?.cep }</p>
+                <p className={ styled.main__establishment_info__info__address__texts__description }> { establishments.address?.street }, { establishments.address?.number } - { establishments.address?.neighborhood }, { establishments.address?.city } - { establishments.address?.state }, { establishments.address?.postal_code }</p>
               </div>
               <ArrowIcon className={ styled.main__establishment_info__info__address__icon }/>
             </div>
@@ -136,23 +145,7 @@ export default async function EstablishmentPage({ params }: { params: { id: stri
             <h2 className={ styled.main__establishment_info__info__read_more }>Ver mais</h2>
           </div>
         </div>
-        <div className={ styled.main__park_container }>
-          <div className={ styled.main__park_container__header }>
-            <h1 className={ styled.main__park_container__header__title }>Vagas</h1>
-            <ReloadIcon className={ styled.main__park_container__header__icon } />
-          </div>
-
-          <div className={ styled.main__park_container__body }>
-            { lots.map((lot) => (
-              <SlotContainer
-                key={ lot.id_lot }
-                lot={ lot }
-                slots={ slots }
-                slotTypes={ slotTypes }
-              />
-            ))}
-          </div>
-        </div>
+        <ParkContainer id_establishment={ id } />
       </div>
       <NavBar />
     </div>

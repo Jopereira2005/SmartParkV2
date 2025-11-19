@@ -1,9 +1,11 @@
 export interface Address {
-  id_address?: string;
-  address: string;
-  district?: string;
-  city?: string;
-  state?: string;
-  cep?: string;
+  id?: string;
+  street: string;
+  number: string;
   complement?: string;
+  neighborhood: string;
+  country: string;
+  city: string;
+  state: string;
+  postal_code: string;
 }

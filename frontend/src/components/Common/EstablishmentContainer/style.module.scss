@@ -23,6 +23,13 @@
     &__body {
       @include flex(column, flex-start, center);
       gap: 5px;
+
+      &__empty {
+        font-size: 2rem;
+        font-weight: var(--font-medium);
+        color: var(--gray-scale);
+        margin-top: 20px;
+      }
     }
 
 

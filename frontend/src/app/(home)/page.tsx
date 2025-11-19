@@ -16,6 +16,8 @@ import { ArrowIcon } from '@/assets/Common/Arrow';
 
 import { getUser } from '@/lib/auth/getUser';
 
+import homeService from '@/services/establishmentService';
+
 export default async function HomePage() {
   const { isLogged, user } = await getUser();
 
@@ -33,22 +35,15 @@ export default async function HomePage() {
     { id_category: "11", name: "Escolas", image: "/images/Escola.png" },
   ];
 
-  const establishments: Establishment[] = [
-    { id_establishment: "1", name: "Facens", description: "Faculdade de Engenharia de Sorocaba", address: { address: "Rodovia Senador José Ermírio de Moraes, 1425", district: "Jardim Constantino Matucci", city: "Sorocaba", state: "SP", cep: "18085-784" } },
-    { id_establishment: "2", name: "Facens", description: "Faculdade de Engenharia de Sorocaba", address: { address: "Rodovia Senador José Ermírio de Moraes, 1425", district: "Jardim Constantino Matucci", city: "Sorocaba", state: "SP", cep: "18085-784" } },
-    { id_establishment: "3", name: "Facens", description: "Faculdade de Engenharia de Sorocaba", address: { address: "Rodovia Senador José Ermírio de Moraes, 1425", district: "Jardim Constantino Matucci", city: "Sorocaba", state: "SP", cep: "18085-784" } },
-    { id_establishment: "4", name: "Facens", description: "Faculdade de Engenharia de Sorocaba", address: { address: "Rodovia Senador José Ermírio de Moraes, 1425", district: "Jardim Constantino Matucci", city: "Sorocaba", state: "SP", cep: "18085-784" } },
-    { id_establishment: "5", name: "Facens", description: "Faculdade de Engenharia de Sorocaba", address: { address: "Rodovia Senador José Ermírio de Moraes, 1425", district: "Jardim Constantino Matucci", city: "Sorocaba", state: "SP", cep: "18085-784" } },
-    { id_establishment: "6", name: "Facens", description: "Faculdade de Engenharia de Sorocaba", address: { address: "Rodovia Senador José Ermírio de Moraes, 1425", district: "Jardim Constantino Matucci", city: "Sorocaba", state: "SP", cep: "18085-784" } }
-  ];
-
   const address: Address = {
-    id_address: "1",
-    address: "R.Smart Park, 98", 
-    district: "Conj. Hab Eng da Computação", 
+    id: "1",
+    street: "R.Smart Park", 
+    number: "98", 
+    neighborhood: "Conj. Hab Eng da Computação", 
+    country: "Brasil",
     city: "Sorocaba", 
     state: "SP", 
-    cep: "18085-784" 
+    postal_code: "18085-784" 
   }
 
   return (
@@ -66,7 +61,6 @@ export default async function HomePage() {
           />
         </div>
         <EstablishmentContainer
-          establishments={ establishments }
           isLogged={ isLogged }
         />
       </div>

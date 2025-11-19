@@ -28,7 +28,6 @@ export default function LoginPage() {
     
     try {
       const response: any = await login(credentials);
-      console.log(response);
 
       if(!response.ok) 
         throw response

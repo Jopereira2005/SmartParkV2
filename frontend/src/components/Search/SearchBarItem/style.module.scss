@@ -27,6 +27,7 @@
         font-size: 1.5rem;
         color: var(--dark-color);
         font-weight: var(--font-bold);
+        @include text-truncate;
       }
   
       &__address {

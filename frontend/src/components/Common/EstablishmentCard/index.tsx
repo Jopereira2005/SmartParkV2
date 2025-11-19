@@ -20,7 +20,7 @@ interface EstablishmentCardProps {
 export default function EstablishmentCard({ establishment, isLogged, isSaved }: EstablishmentCardProps) {
   return (
     <div className={ styled.establishment_card }>
-      <Link href={`/establishment/${establishment.id_establishment}`} className={ styled.establishment_card__info }>
+      <Link href={`/establishment/${establishment.id}`} className={ styled.establishment_card__info }>
         <Image
           className={ styled.establishment_card__info__image }
           src="/facens.svg"
@@ -30,7 +30,7 @@ export default function EstablishmentCard({ establishment, isLogged, isSaved }: 
         />
         <div className={ styled.establishment_card__info__texts }>
           <h2 className={ styled.establishment_card__info__texts__name }>{ establishment.name }</h2>
-          <p className={ styled.establishment_card__info__texts__address }>{ establishment.address?.address } - { establishment.address?.district }, { establishment.address?.city } - { establishment.address?.state }, { establishment.address?.cep }</p>
+          <p className={ styled.establishment_card__info__texts__address }>{ establishment.address?.street }, { establishment.address?.number } - { establishment.address?.neighborhood }, { establishment.address?.city } - { establishment.address?.state }, { establishment.address?.postal_code }</p>
         </div>
       </Link>
       <div className={ styled.establishment_card__others }>
@@ -40,7 +40,7 @@ export default function EstablishmentCard({ establishment, isLogged, isSaved }: 
           <>
             <div className={ styled.establishment_card__others__div }></div>
             <MarkIcon className={ `${ styled.establishment_card__others__icon } ${ isSaved ? styled.establishment_card__others__icon__isMarked : '' }` }/>
-          </> 
+          </>
         }
       </div>
     </div>

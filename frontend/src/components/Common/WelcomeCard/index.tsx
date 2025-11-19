@@ -45,11 +45,11 @@ export default function WelcomeCard({ User, Address, isLogged }: WelcomeCardProp
               <div className={ styled.welcome__texts__under_bar__address }>
                 { pathname != "/profile" ? 
                 <>
-                  <h2 className={ styled.welcome__texts__under_bar__address__title }>{ Address.address }</h2>
-                  <p className={ styled.welcome__texts__under_bar__address__description }>{ Address.district }, { Address.city } - { Address.state }, { Address.cep }</p>
+                  <h2 className={ styled.welcome__texts__under_bar__address__title }>{ Address.street }, { Address.number }</h2>
+                  <p className={ styled.welcome__texts__under_bar__address__description }>{ Address.neighborhood }, { Address.city } - { Address.state }, { Address.postal_code }</p>
                 </> : 
                 <>
-                  <h2 className={ styled.welcome__texts__under_bar__address__text }>{ Address.address }<span> | { Address.district }, { Address.city } - { Address.state }, { Address.cep }</span></h2>
+                  <h2 className={ styled.welcome__texts__under_bar__address__text }>{ Address.street }, { Address.number }<span> | { Address.neighborhood }, { Address.city } - { Address.state }, { Address.postal_code }</span></h2>
                 </>
                 }
               </div>

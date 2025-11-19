@@ -11,12 +11,10 @@ import ParkCounter from "@/components/Common/ParkCounter";
 
 interface SearchBarItemProps {
   establishment: Establishment | null;
-  navigateTo: (id_establishment: Establishment) => void;
-  saveFunction?: (establishment: Establishment) => void;
   isSaved: boolean;
 }
 
-export default function SearchBarItem({ establishment, saveFunction, navigateTo, isSaved }: SearchBarItemProps) {
+export default function SearchBarItem({ establishment, isSaved }: SearchBarItemProps) {
   return (
     <div className={ styled.search_bar_item  }>
       <div className={ styled.search_bar_item__info }>
@@ -29,7 +27,7 @@ export default function SearchBarItem({ establishment, saveFunction, navigateTo,
         />
         <div className={ styled.search_bar_item__info__texts }>
           <h2 className={ styled.search_bar_item__info__texts__name }>{ establishment?.name }</h2>
-          <p className={ styled.search_bar_item__info__texts__address }>| { establishment?.address?.address } - { establishment?.address?.district }, { establishment?.address?.city } - { establishment?.address?.state }, { establishment?.address?.cep }</p>
+          <p className={ styled.search_bar_item__info__texts__address }>| { establishment?.address?.street }, { establishment?.address?.number } - { establishment?.address?.neighborhood }, { establishment?.address?.city } - { establishment?.address?.state }, { establishment?.address?.postal_code }</p>
         </div>
       </div>
       <div className={ styled.search_bar_item__others }>

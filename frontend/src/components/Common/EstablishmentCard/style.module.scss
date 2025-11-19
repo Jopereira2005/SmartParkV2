@@ -30,6 +30,7 @@
         font-size: 1.8rem;
         color: var(--dark-color);
         font-weight: var(--font-bold);
+        @include text-truncate(1);
       }
   
       &__address {
